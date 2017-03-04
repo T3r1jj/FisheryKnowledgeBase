@@ -78,7 +78,7 @@ public class Application {
         return new ApiInfoBuilder()
                 .title("RSI fishery project 3rd module API (KnowledgeBase)")
                 .description("KnowledgeBase API allows to fetch information about products and services offered by RSI project from external sources (i.e. websites). This project is non-commercial, made in learning purposes.")
-                .contact(new Contact("Damian Terlecki T3r1jj@github", "https://gitlab.com/Druzyna-A/KnowledgeBase", "terleckidamian1@gmail.com"))
+                .contact(new Contact("Damian Terlecki, T3r1jj@github", "https://gitlab.com/Druzyna-A/KnowledgeBase", "terleckidamian1@gmail.com"))
                 .version(buildVersion)
                 .build();
     }
