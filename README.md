@@ -3,3 +3,5 @@ KnowledgeBase is a RSI-Fishery project (3rd) module which scrapes information fr
 
 The module is currently hosted on Heroku at: https://fishery-knowledge-base.herokuapp.com  
 Watch for API version changes.
+
+![Screenshot](http://i.imgur.com/deW9pgx.png)
