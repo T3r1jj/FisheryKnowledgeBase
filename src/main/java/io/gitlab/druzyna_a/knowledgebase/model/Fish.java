@@ -9,10 +9,14 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @ApiModel(value = "Fish", description = "Fish resource representation")
 public class Fish {
+
     @ApiModelProperty(value = "Fish name", required = true)
     private String name = "Stub name";
-    @ApiModelProperty(value = "Weight")
-    private double weight = 9000;
+    private String description = "A longer description of the fish...";
+    @ApiModelProperty(value = "Average fish weight [kg]", example = "2")
+    private float weight = 2;
+    @ApiModelProperty(value = "Average fish length [m]", example = "0.2")
+    private float length = 0.2f;
 
     public String getName() {
         return name;
@@ -22,13 +26,12 @@ public class Fish {
         this.name = name;
     }
 
-    public double getWeight() {
+    public float getWeight() {
         return weight;
     }
 
-    public void setWeight(double weight) {
+    public void setWeight(float weight) {
         this.weight = weight;
     }
-    
-    
+
 }

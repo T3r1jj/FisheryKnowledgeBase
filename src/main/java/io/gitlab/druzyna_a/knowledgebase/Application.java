@@ -50,6 +50,7 @@ public class Application {
                 .apis(RequestHandlerSelectors.any())
                 .paths(getPaths())
                 .build()
+                .useDefaultResponseMessages(false)
                 .apiInfo(getApiInfo())
                 .pathMapping("/");
     }
