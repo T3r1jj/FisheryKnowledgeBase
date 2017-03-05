@@ -1,17 +1,13 @@
 package io.gitlab.druzyna_a.knowledgebase.rest;
 
+import io.gitlab.druzyna_a.knowledgebase.model.Equipment;
 import io.gitlab.druzyna_a.knowledgebase.model.Fish;
 import io.gitlab.druzyna_a.knowledgebase.model.Protection;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,31 +15,41 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author Damian Terlecki
  */
-@Api(value = "/fish", tags = {"fish"}, description = "Operations about fish")
 @RestController
-@RequestMapping("/fish")
-public class FishRestController {
+public class FishRestController implements FishApi {
 
-    @ApiOperation(httpMethod = "GET", value = "Fetch additional information about fish by name")
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "Information about fish", response = Fish.class)
-        ,
-        @ApiResponse(code = 404, message = "No information about fish with such name", response = Void.class)})
-    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<Fish> fetchFishInformation(@ApiParam(value = "Name of the fish", allowableValues = "string", required = true) @RequestParam("name") String name) {
+    @Override
+    public ResponseEntity<Fish> fetchFish(@ApiParam(value = "Name of the fish", required = true) @PathVariable("name") String name) {
         return ResponseEntity.ok().body(new Fish());
     }
 
-    @ApiOperation(httpMethod = "GET", value = "Fetch additional protection information about fish by name")
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "Information about fish protection", response = Protection.class, responseContainer = "List")
-        ,
-        @ApiResponse(code = 204, message = "No information about protection protection (fish not protected AFAIK)", response = Void.class)
-        ,
-        @ApiResponse(code = 404, message = "No information about fish with such name", response = Void.class)})
-    @RequestMapping(path = "/protection", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<List<Protection>> fetchFishProtectionInformation(@ApiParam(value = "Name of the fish", allowableValues = "string", required = true) @RequestParam("name") String name) {
+    @Override
+    public ResponseEntity<List<Protection>> fetchFishProtections(@ApiParam(value = "Name of the fish", allowableValues = "string", required = true)
+            @RequestParam(required = true) String name) {
         return ResponseEntity.ok().body(Arrays.asList(new Protection[]{new Protection(), new Protection(), new Protection()}));
+    }
+
+    @Override
+    public ResponseEntity<List<String>> fetchFishImages(@ApiParam(value = "Name of the fish", required = true)
+            @RequestParam String name) {
+        return ResponseEntity.ok().body(Arrays.asList(new String[]{"https://cdn.pixabay.com/photo/2015/12/06/20/05/fishing-1079915_960_720.jpg"}));
+    }
+
+    @Override
+    public ResponseEntity<Boolean> exists(@ApiParam(value = "Name of the fish", required = true) @RequestParam String name,
+            @ApiParam(value = "Fishery latitude coordinate", required = true) @RequestParam double lat,
+            @ApiParam(value = "Fishery longtitude coordinate", required = true) @RequestParam double lng) {
+        return ResponseEntity.ok().body(Boolean.TRUE);
+    }
+
+    @Override
+    public ResponseEntity<List<String>> fetchFishes() {
+        return ResponseEntity.ok(Arrays.asList(new String[]{"perch", "roach"}));
+    }
+
+    @Override
+    public ResponseEntity<Equipment> fetchBestEquipment(@ApiParam(value = "Name of the fish", required = true) @PathVariable("name") String name) {
+        return ResponseEntity.ok().body(new Equipment());
     }
 
 }

@@ -10,7 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value = "Fish", description = "Fish resource representation")
 public class Fish {
 
-    @ApiModelProperty(value = "Fish name", required = true)
+    @ApiModelProperty(value = "Fish name", required = true, example="northern pike")
     private String name = "Stub name";
     private String description = "A longer description of the fish...";
     @ApiModelProperty(value = "Average fish weight [kg]", example = "2")
