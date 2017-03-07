@@ -48,7 +48,7 @@ public class FishRestController implements FishApi {
     }
 
     @Override
-    public ResponseEntity<Equipment> fetchBestEquipment(@ApiParam(value = "Name of the fish", required = true) @PathVariable("name") String name) {
+    public ResponseEntity<Equipment> fetchBestEquipment(@ApiParam(value = "Name of the fish", required = true) @RequestParam("name") String name) {
         return ResponseEntity.ok().body(new Equipment());
     }
 

@@ -34,8 +34,8 @@ public interface FishApi {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Best equipment configuration for catching a fish", response = Equipment.class)
         , @ApiResponse(code = 404, message = "No information about fish with such name", response = Void.class)})
-    @RequestMapping(path = "/{name}/equipment", method = RequestMethod.GET, produces = "application/json")
-    ResponseEntity<Equipment> fetchBestEquipment(@ApiParam(value = "Name of the fish", required = true) @PathVariable("name") String name);
+    @RequestMapping(path = "/equipment", method = RequestMethod.GET, produces = "application/json")
+    ResponseEntity<Equipment> fetchBestEquipment(@ApiParam(value = "Name of the fish", required = true) @RequestParam("name") String name);
 
     @ApiOperation(httpMethod = "GET", value = "Fetch all fish names")
     @ApiResponses(value = {
