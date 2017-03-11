@@ -1,4 +1,4 @@
-package io.gitlab.druzyna_a.knowledgebase.rest;
+package io.gitlab.druzyna_a.knowledgebase.rest.offered;
 
 import io.gitlab.druzyna_a.knowledgebase.model.Equipment;
 import io.gitlab.druzyna_a.knowledgebase.model.Fish;
@@ -43,7 +43,7 @@ public class FishRestController implements FishApi {
     }
 
     @Override
-    public ResponseEntity<List<String>> fetchFishes() {
+    public ResponseEntity<List<String>> fetchFishes(@ApiParam(value = "Country code ISO 3166-1 alpha-2", required = true, example = "PL") @RequestParam String countryCode) {
         return ResponseEntity.ok(Arrays.asList(new String[]{"perch", "roach"}));
     }
 

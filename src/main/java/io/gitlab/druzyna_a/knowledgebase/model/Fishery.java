@@ -9,23 +9,19 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @ApiModel(description = "Basic information about fishery place")
 public class Fishery {
+
     @ApiModelProperty
-    private Coordinate coordinate = new Coordinate(23.0294058, 53.8824905);
+    private Coordinate coordinate;
     @ApiModelProperty
-    private String name = "kalejty";
+    private String name;
     @ApiModelProperty
-    private String description = "longer description";
+    private String description;
     @ApiModelProperty
-    private String requirements = "Warunki wędkowania na jeziorze Długie Augustowskie (Kalejty) w zlewni rzeki Rospuda nr 14.\n"
-            + "-------------------------------------------------------------------------------------------\n"
-            + "Zezwolenie jest ważne jedynie z kartą wędkarską i wniesionym i składkami członkowskimi Okręgu PZW w Białymstoku\n"
-            + "lub wniesionymi opłatami za wędkowanie dla osób niezrzeszonych w PZW.\n"
-            + " \n"
-            + "Amatorski połów ryb odbywa się w sposób i na zasadach określonych w Regulaminie Amatorskiego Połowu Ryb uchwalonego przez Zarząd Główny PZW z ograniczeniami:\n"
-            + "jednocześnie może wędkować maksymalnie 20 osób, w tym z 5 jednostek pływających bez silników spalinowych\n"
-            + "połów ryb może odbywać się jedynie z pomostów oznakowanych (5 sztuk), w rejonie wsi Strękowizna,\n"
-            + "zakaz wypuszczania złowionych ryb karpiowatych, zachowując wymiary i okresy ochronne,\n"
-            + "łączna liczba złowionych i zabieranych ryb (szczupak szt. 2,węgorz szt. 2, sum szt. 1, sandacz szt. 2, lin szt. 4) z łowiska nie może przekroczyć 10 sztuk w ciągu doby.";
+    private String requirements;
+
+    public Fishery(Coordinate coordinate) {
+        this.coordinate = coordinate;
+    }
 
     public Coordinate getCoordinate() {
         return coordinate;
@@ -56,7 +52,11 @@ public class Fishery {
     }
 
     public void setRequirements(String requirements) {
-        this.requirements = requirements;
+        if (requirements != null) {
+            this.requirements = requirements;
+        } else {
+            this.requirements = "unknown";
+        }
     }
-    
+
 }

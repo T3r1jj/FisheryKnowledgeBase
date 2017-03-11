@@ -8,9 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import io.gitlab.druzyna_a.knowledgebase.rest.FishRestController;
+import io.gitlab.druzyna_a.knowledgebase.rest.offered.FishRestController;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -47,8 +45,8 @@ public class Application {
     public Docket swaggerSettings() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(getPaths())
+                .apis(RequestHandlerSelectors.basePackage(getClass().getPackage().getName() + ".rest.offered"))
+                .paths(PathSelectors.any())
                 .build()
                 .useDefaultResponseMessages(false)
                 .apiInfo(getApiInfo())
@@ -71,16 +69,14 @@ public class Application {
         }
     }
 
-    private Predicate<String> getPaths() {
-        return Predicates.and(Predicates.not(PathSelectors.regex("^/$")), Predicates.not(PathSelectors.regex("/error")));
-    }
-
     private ApiInfo getApiInfo() {
         return new ApiInfoBuilder()
                 .title("RSI fishery project 3rd module API (KnowledgeBase)")
                 .description("KnowledgeBase API allows to fetch information about products and services offered by RSI project from external sources (i.e. websites). This project is non-commercial, made in learning purposes.")
                 .contact(new Contact("Damian Terlecki, T3r1jj@github", "https://gitlab.com/Druzyna-A/KnowledgeBase", "terleckidamian1@gmail.com"))
                 .version(buildVersion)
+                .license("Used components (licenses)")
+                .licenseUrl("/license.html")
                 .build();
     }
 

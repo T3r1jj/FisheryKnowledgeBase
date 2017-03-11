@@ -1,4 +1,4 @@
-package io.gitlab.druzyna_a.knowledgebase.rest;
+package io.gitlab.druzyna_a.knowledgebase.rest.offered;
 
 import io.gitlab.druzyna_a.knowledgebase.model.Equipment;
 import io.gitlab.druzyna_a.knowledgebase.model.Fish;
@@ -41,7 +41,7 @@ public interface FishApi {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Fish names", response = String.class, responseContainer = "List")})
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    ResponseEntity<List<String>> fetchFishes();
+    ResponseEntity<List<String>> fetchFishes(@ApiParam(value = "Country code ISO 3166-1 alpha-2", required = true, example = "PL") @RequestParam String countryCode);
 
     @ApiOperation(httpMethod = "GET", value = "Fetch additional protection information about fish by name")
     @ApiResponses(value = {

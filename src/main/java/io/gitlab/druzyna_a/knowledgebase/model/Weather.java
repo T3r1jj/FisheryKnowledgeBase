@@ -2,8 +2,7 @@ package io.gitlab.druzyna_a.knowledgebase.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 
 /**
  *
@@ -13,7 +12,7 @@ import java.time.ZoneOffset;
 public class Weather {
 
     @ApiModelProperty(value = "Time in epoch [s] UTC", required = true)
-    public final long time = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+    public final long time;
     /**
      * pressure [Pa]
      */
@@ -41,7 +40,7 @@ public class Weather {
     public final double windAngle;
 
     public Weather() {
-        this(101325, 288.15, 0, 0, 0);
+        this(101325, 288.15, 0, 0, 0, Instant.now().getEpochSecond());
     }
 
     /**
@@ -50,13 +49,15 @@ public class Weather {
      * @param phi humidity [0d..1d]
      * @param windSpeed [m/s]
      * @param windAngle [rad]
+     * @param time in epoch [s] UTC
      */
-    public Weather(double p, double T, double phi, double windSpeed, double windAngle) {
+    public Weather(double p, double T, double phi, double windSpeed, double windAngle, long time) {
         this.p = p;
         this.T = T;
         this.phi = phi;
         this.windSpeed = windSpeed;
         this.windAngle = windAngle;
+        this.time = time;
     }
 
     /**
@@ -102,6 +103,7 @@ public class Weather {
     /**
      * @return direction e.g. "N" wind direction is from north to south
      */
+    @ApiModelProperty(value = "One of 16 directions starting from N clockwise", example = "N")
     public String getWindDirection() {
         int directionIndex = getWindDirectionIndex();
         String[] directions = new String[]{"N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"};
@@ -111,6 +113,7 @@ public class Weather {
     /**
      * @return 16 indexes of subsequent directions clockwise starting from N
      */
+    @ApiModelProperty(value = "One of 16 directions starting from N clockwise", example = "0")
     public int getWindDirectionIndex() {
         return (int) (Math.round((windAngle / (Math.PI / 8))) % 16);
     }
