@@ -2,6 +2,9 @@ stages:
   - deploy
 
 deploy:
+  only:
+    - tags
+    - triggers
   stage: deploy
   script:
     - apt-get update -yq

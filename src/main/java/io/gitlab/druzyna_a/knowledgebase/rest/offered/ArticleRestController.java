@@ -44,4 +44,49 @@ public class ArticleRestController implements ArticleApi {
         return ResponseEntity.ok().body(new Long(0));
     }
 
+    @ApiOperation(httpMethod = "GET", value = "Request rod tags that could be used when requesting articles")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "List of tags", response = String.class, responseContainer = "List")})
+    @RequestMapping(path = "tags/rod", method = RequestMethod.POST, produces = "application/json")
+    @Override
+    public ResponseEntity<List<String>> requestRodTags() {
+        return ResponseEntity.ok(Arrays.asList(new String[]{"tag1", "tag2"}));
+    }
+
+    @ApiOperation(httpMethod = "GET", value = "Request reel tags that could be used when requesting articles")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "List of tags", response = String.class, responseContainer = "List")})
+    @RequestMapping(path = "tags/reel", method = RequestMethod.POST, produces = "application/json")
+    @Override
+    public ResponseEntity<List<String>> requestReelTags() {
+        return ResponseEntity.ok(Arrays.asList(new String[]{"tag1", "tag2"}));
+    }
+
+    @ApiOperation(httpMethod = "GET", value = "Request lure tags that could be used when requesting articles")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "List of tags", response = String.class, responseContainer = "List")})
+    @RequestMapping(path = "tags/lure", method = RequestMethod.POST, produces = "application/json")
+    @Override
+    public ResponseEntity<List<String>> requestLureTags() {
+        return ResponseEntity.ok(Arrays.asList(new String[]{"tag1", "tag2"}));
+    }
+
+    @ApiOperation(httpMethod = "GET", value = "Request accesory tags that could be used when requesting articles")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "List of tags", response = String.class, responseContainer = "List")})
+    @RequestMapping(path = "tags/accessory", method = RequestMethod.POST, produces = "application/json")
+    @Override
+    public ResponseEntity<List<String>> requestAccesssoryTags() {
+        return ResponseEntity.ok(Arrays.asList(new String[]{"tag1", "tag2"}));
+    }
+
+    @ApiOperation(httpMethod = "GET", value = "Request tackle tags that could be used when requesting articles")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "List of tags", response = String.class, responseContainer = "List")})
+    @RequestMapping(path = "tags/tackle", method = RequestMethod.POST, produces = "application/json")
+    @Override
+    public ResponseEntity<List<String>> requestTackleTags() {
+        return ResponseEntity.ok(Arrays.asList(new String[]{"tag1", "tag2"}));
+    }
+
 }

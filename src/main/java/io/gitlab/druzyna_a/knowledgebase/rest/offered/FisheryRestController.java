@@ -2,7 +2,7 @@ package io.gitlab.druzyna_a.knowledgebase.rest.offered;
 
 import com.google.gson.GsonBuilder;
 import io.gitlab.druzyna_a.knowledgebase.model.Fishery;
-import io.gitlab.druzyna_a.knowledgebase.model.IsoUtil;
+import io.gitlab.druzyna_a.knowledgebase.model.utils.IsoUtil;
 import io.gitlab.druzyna_a.knowledgebase.model.Weather;
 import io.gitlab.druzyna_a.knowledgebase.model.external.OpenWeather;
 import io.gitlab.druzyna_a.knowledgebase.model.external.OverpassFisheryData;
@@ -77,7 +77,7 @@ public class FisheryRestController implements FisheryApi {
                         )
                 ).build();
         final OpenWeatherService service = retrofit.create(OpenWeatherService.class);
-        Call<OpenWeather> openWeatherCall = service.getWeather(lat, lng, OPEN_WEATHER_MAP_APP_ID);
+        Call<OpenWeather> openWeatherCall = service.getWeather(lng, lat, OPEN_WEATHER_MAP_APP_ID);
         weatherCallCounter.call();
         try {
             Response<OpenWeather> response = openWeatherCall.execute();
@@ -116,7 +116,7 @@ public class FisheryRestController implements FisheryApi {
                         )
                 ).build();
         final OpenWeatherService service = retrofit.create(OpenWeatherService.class);
-        Call<OpenWeather.Forecast> openWeatherCall = service.getForecast(lat, lng, OPEN_WEATHER_MAP_APP_ID);
+        Call<OpenWeather.Forecast> openWeatherCall = service.getForecast(lng, lat, OPEN_WEATHER_MAP_APP_ID);
         weatherCallCounter.call();
         try {
             Response<OpenWeather.Forecast> response = openWeatherCall.execute();

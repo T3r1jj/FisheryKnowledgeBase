@@ -37,4 +37,35 @@ public interface ArticleApi {
     ResponseEntity<Long> requestArticles(@ApiParam(value = "Regex for searching by title") @RequestParam(required = false) String titleRegex,
             @ApiParam(value = "Regex for searching by description") @RequestParam(required = false) String descriptionRegex,
             @ApiParam(value = "Regex for searching by author") @RequestParam(required = false) String authorRegex);
+
+    @ApiOperation(httpMethod = "GET", value = "Request rod tags that could be used when requesting articles")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "List of tags", response = String.class, responseContainer = "List")})
+    @RequestMapping(path = "tags/rod", method = RequestMethod.POST, produces = "application/json")
+    ResponseEntity<List<String>> requestRodTags();
+
+    @ApiOperation(httpMethod = "GET", value = "Request reel tags that could be used when requesting articles")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "List of tags", response = String.class, responseContainer = "List")})
+    @RequestMapping(path = "tags/reel", method = RequestMethod.POST, produces = "application/json")
+    ResponseEntity<List<String>> requestReelTags();
+
+    @ApiOperation(httpMethod = "GET", value = "Request lure tags that could be used when requesting articles")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "List of tags", response = String.class, responseContainer = "List")})
+    @RequestMapping(path = "tags/lure", method = RequestMethod.POST, produces = "application/json")
+    ResponseEntity<List<String>> requestLureTags();
+
+    @ApiOperation(httpMethod = "GET", value = "Request accesory tags that could be used when requesting articles")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "List of tags", response = String.class, responseContainer = "List")})
+    @RequestMapping(path = "tags/accessory", method = RequestMethod.POST, produces = "application/json")
+    ResponseEntity<List<String>> requestAccesssoryTags();
+
+    @ApiOperation(httpMethod = "GET", value = "Request tackle tags that could be used when requesting articles")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "List of tags", response = String.class, responseContainer = "List")})
+    @RequestMapping(path = "tags/tackle", method = RequestMethod.POST, produces = "application/json")
+    ResponseEntity<List<String>> requestTackleTags();
+
 }

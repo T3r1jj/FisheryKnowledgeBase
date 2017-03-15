@@ -1,6 +1,5 @@
 package io.gitlab.druzyna_a.knowledgebase.rest.offered;
 
-import io.gitlab.druzyna_a.knowledgebase.model.Equipment;
 import io.gitlab.druzyna_a.knowledgebase.model.Fish;
 import io.gitlab.druzyna_a.knowledgebase.model.Protection;
 import io.swagger.annotations.Api;
@@ -29,13 +28,6 @@ public interface FishApi {
         , @ApiResponse(code = 404, message = "No information about fish with such name", response = Void.class)})
     @RequestMapping(path = "/{name}", method = RequestMethod.GET, produces = "application/json")
     ResponseEntity<Fish> fetchFish(@ApiParam(value = "Name of the fish", required = true) @PathVariable("name") String name);
-
-    @ApiOperation(httpMethod = "GET", value = "Fetch additional information about best equipment configuration for catching a given fish")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Best equipment configuration for catching a fish", response = Equipment.class)
-        , @ApiResponse(code = 404, message = "No information about fish with such name", response = Void.class)})
-    @RequestMapping(path = "/equipment", method = RequestMethod.GET, produces = "application/json")
-    ResponseEntity<Equipment> fetchBestEquipment(@ApiParam(value = "Name of the fish", required = true) @RequestParam("name") String name);
 
     @ApiOperation(httpMethod = "GET", value = "Fetch all fish names")
     @ApiResponses(value = {

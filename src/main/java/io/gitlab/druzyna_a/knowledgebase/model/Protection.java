@@ -10,54 +10,46 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "Protection information about fish in respect of period, weight, length or a combination of those.")
 public class Protection {
 
-    @ApiModelProperty(value = "Fish protection period [dd/MM-dd/MM], none if protection not based on period")
-    private Period period = new Period();
-    @ApiModelProperty(value = "Fish protection weight [kg] (up to), zero if protection not based on weight", example = "2")
-    private float weight = 2;
-    @ApiModelProperty(value = "Fish protection length [m] (up to), zero if protection not based on length", example = "0.3")
-    private float length = 0.3f;
+    
+    @ApiModelProperty(value = "Status", example = "Least Concern")
+    private String status;
+    @ApiModelProperty(value = "Assessment", example = "A widespread species and not globally threatened.")
+    private String assessment;
+    @ApiModelProperty(value = "Use and trade", example = "Gorillas are completely protected by national and international laws in all countries of their range, and it is, therefore, illegal to kill, capture or trade in live Gorillas or their body parts.")
+    private String useAndTrade;
+    @ApiModelProperty(value = "Conservation actions", example = "To address the critical situation faced by Grauer’s Gorillas, NGOs are working with the government authorities to support protected areas and reinforce conservation programmes.")
+    private String conservation;
 
-    public Period getPeriod() {
-        return period;
+    public String getStatus() {
+        return status;
     }
 
-    public void setPeriod(Period period) {
-        this.period = period;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public float getWeight() {
-        return weight;
+    public String getAssessment() {
+        return assessment;
     }
 
-    public void setWeight(float weight) {
-        this.weight = weight;
+    public void setAssessment(String assessment) {
+        this.assessment = assessment;
     }
 
-    public float getLength() {
-        return length;
+    public String getUseAndTrade() {
+        return useAndTrade;
     }
 
-    public void setLength(float length) {
-        this.length = length;
+    public void setUseAndTrade(String useAndTrade) {
+        this.useAndTrade = useAndTrade;
     }
 
-    @ApiModel(description = "Simple period data in dd/MM format (start-end)")
-    public class Period {
+    public String getConservation() {
+        return conservation;
+    }
 
-        @ApiModelProperty(value = "dd/MM", example = "14/02", required = true)
-        public final String startDate;
-        @ApiModelProperty(value = "dd/MM", example = "14/02", required = true)
-        public final String endDate;
-
-        public Period() {
-            this("14/02", "15/05");
-        }
-
-        public Period(String startDate, String endDate) {
-            this.startDate = startDate;
-            this.endDate = endDate;
-        }
-
+    public void setConservation(String conservation) {
+        this.conservation = conservation;
     }
 
 }
