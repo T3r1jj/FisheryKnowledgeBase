@@ -6,6 +6,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jsoup.Connection;
@@ -24,9 +27,9 @@ public class ScrapingTagsTest {
         "http://www.tackledirect.com/",
         "http://fish.shimano.com/content/sac-fish/en/home/products.html"
     };
-    private volatile boolean[] finished = new boolean[]{false, false};
 
     private List<List<String>> tags = new ArrayList<List<String>>();
+    private ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     @Before
     public void setUp() {
@@ -37,7 +40,7 @@ public class ScrapingTagsTest {
 
     @Test
     public void getAllTags() {
-        new Thread(new Runnable() {
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
                 Connection connection = Jsoup.connect(baseUrls[0]).timeout(10 * 1000);
@@ -47,11 +50,10 @@ public class ScrapingTagsTest {
                 } catch (IOException ex) {
                     Logger.getLogger(ScrapingTagsTest.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                finished[0] = true;
             }
-        }).start();
+        });
 
-        new Thread(new Runnable() {
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
                 Connection connection = Jsoup.connect(baseUrls[1]).timeout(10 * 1000);
@@ -61,17 +63,15 @@ public class ScrapingTagsTest {
                 } catch (IOException ex) {
                     Logger.getLogger(ScrapingTagsTest.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                finished[1] = true;
             }
-        }).start();
-
-        while (!finished[0] || !finished[1]) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(ScrapingTagsTest.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        });
+        executorService.shutdown();
+        try {
+            while (!executorService.awaitTermination(100, TimeUnit.MILLISECONDS));
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Crawler.class.getName()).log(Level.SEVERE, null, ex);
         }
+        executorService.shutdown();
         tags.forEach(l -> System.out.println(l));
     }
 

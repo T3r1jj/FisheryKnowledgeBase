@@ -8,4 +8,5 @@ import org.jsoup.nodes.Document;
  */
 public interface ScrapeCommand {
     void scrape(Document document);
+    boolean ignore(String url);
 }
