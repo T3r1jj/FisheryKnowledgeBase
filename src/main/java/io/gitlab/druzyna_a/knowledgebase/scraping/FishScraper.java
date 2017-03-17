@@ -1,0 +1,220 @@
+package io.gitlab.druzyna_a.knowledgebase.scraping;
+
+import io.gitlab.druzyna_a.knowledgebase.model.Coordinate;
+import io.gitlab.druzyna_a.knowledgebase.model.Fish;
+import io.gitlab.druzyna_a.knowledgebase.model.FishImage;
+import io.gitlab.druzyna_a.knowledgebase.model.FishName;
+import io.gitlab.druzyna_a.knowledgebase.model.FishProtection;
+import io.gitlab.druzyna_a.knowledgebase.model.external.BoundingBox;
+import io.gitlab.druzyna_a.knowledgebase.model.utils.IsoUtil;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+/**
+ *
+ * @author Damian Terlecki
+ */
+@Component
+@Scope("singleton")
+public class FishScraper {
+
+    private static final int TIMEOUT_SEC = 10;
+
+    public Optional<List<FishName>> scrapeFishNames(String countryCode) throws IOException {
+        if (!IsoUtil.isValidCountry(countryCode)) {
+            return Optional.empty();
+        }
+        int numericCountryCode = IsoUtil.getCountryCode(countryCode);
+        int pageIndex = 1;
+        List<FishName> fishNames = new LinkedList<>();
+        Document doc;
+        do {
+            String url = BaseUrls.FISH_NAMES + "CountryChecklist.php?c_code=" + numericCountryCode + "&vhabitat=all2&csub_code=&cpresence=present&resultPage=" + pageIndex;
+            Connection connection = Jsoup.connect(url).timeout(TIMEOUT_SEC * 1000);
+            doc = connection.get();
+            Element content = doc.body();
+            Element table = doc.select("table[class=commonTable]").first();
+            Iterator<Element> it = table.select("td").iterator();
+            while (it.hasNext()) {
+                it.next();
+                it.next();
+                String species = it.next().text();
+                it.next();
+                String name = it.next().text();
+                String localName = it.next().text();
+                fishNames.add(new FishName(name, species, localName));
+            }
+            pageIndex++;
+        } while (doc.getElementsByTag("a").text().contains("Next"));
+        return Optional.of(fishNames);
+    }
+
+    public Optional<Fish> scrapeFish(String fishName) throws IOException {
+        String url = scrapeFishBaseFishLink(fishName);
+        if (url == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(scrapeFishBaseFish(url, fishName));
+        }
+    }
+
+    private String scrapeFishBaseFishLink(String fishName) throws IOException {
+        Connection connection = Jsoup.connect(BaseUrls.FISH + "CommonNameSearchList.php")
+                .data("CommonName", fishName).timeout(TIMEOUT_SEC * 1000);
+        Document doc = connection.post();
+        Element content = doc.body();
+        Elements links = content.getElementsByTag("a");
+        final List<Element> fishLinks = links.stream().filter(l -> l.attr("href").contains("SpeciesSummary.php")).collect(Collectors.toList());
+        return fishLinks.get(0).attr("href");
+    }
+
+    private Fish scrapeFishBaseFish(String url, String fishName) throws IOException {
+        Connection connection = Jsoup.connect(BaseUrls.FISH + url).timeout(TIMEOUT_SEC * 1000);
+        Document doc = connection.get();
+        Fish fish = new Fish(fishName);
+        final Element sciName = doc.getElementById("ss-sciname").getElementsByClass("sciname").get(0);
+        fish.setSciName(getDivSpanContent(sciName));
+        final Element main = doc.getElementById("ss-main");
+        final Elements divs = main.getElementsByTag("div");
+        final Element maturity = divs.get(4);
+        float length;
+        try {
+            length = Float.parseFloat(maturity.text().split(" ")[2].replace(',', '\0'));
+            fish.setLength(length / 100f);
+        } catch (NumberFormatException ex) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+        }
+        final Element description = divs.get(5);
+        fish.setDescription(getDivSpanContent(description));
+        final Element biology = divs.get(7);
+        fish.setBiology(getDivSpanContent(biology));
+        final Element estimation = main.getElementsByClass("smallSpace").select("div:contains(length-weight)").get(0).child(1);
+        final String[] splits = estimation.text().split("=");
+        float a, b;
+        try {
+            a = Float.parseFloat(splits[1].split(" ")[0]);
+            b = Float.parseFloat(splits[2].split(" ")[0]);
+            fish.setWeight(a, b);
+        } catch (NumberFormatException ex) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+        }
+        return fish;
+    }
+
+    private String getDivSpanContent(Element element) {
+        element.getElementsByTag("a").forEach(e -> {
+            if (e.toString().contains("Ref")) {
+                e.remove();
+            } else {
+                e.unwrap();
+            }
+        });
+        final Element span = element.getElementsByTag("span").get(0);
+        return span.text().replace(" (Ref. )", "");
+    }
+
+    public Optional<FishProtection> scrapeFishProtection(String fishSciName) throws IOException {
+        String protectionUrl = getProtectionUrl(fishSciName);
+        if (protectionUrl != null) {
+            Connection connection = Jsoup.connect(BaseUrls.FISH_PROTECTION + protectionUrl).timeout(TIMEOUT_SEC * 1000);
+            Document doc = connection.get();
+            FishProtection protection = new FishProtection();
+            final Element status = doc.getElementsByClass("label").stream().filter(l -> l.text().contains("Red List Category & Criteria")).findFirst().get().parent().child(1);
+            status.getElementsByTag("a").remove();
+            protection.setStatus(status.text());
+            final Element assessment = doc.getElementsByTag("td").stream().filter(td -> td.text().contains("Justification:")).findFirst().get();
+            protection.setAssessment(assessment.text());
+            doc.getElementsByClass("label").stream().filter(l -> l.text().contains("Use and Trade:")).findFirst().ifPresent(l -> protection.setUseAndTrade(l.parent().child(1).text()));
+            final Element conservation = doc.getElementsByClass("label").stream().filter(l -> l.text().contains("Conservation Actions:")).findFirst().get().parent().child(1);
+            protection.setConservation(conservation.text());
+            return Optional.of(protection);
+        }
+        return null;
+    }
+
+    private String getProtectionUrl(String fishSciName) throws IOException {
+        Connection connection = Jsoup.connect(BaseUrls.FISH_PROTECTION + "/search/external").timeout(TIMEOUT_SEC * 1000).data("text", fishSciName);
+        Document doc = connection.post();
+        final Element results = doc.getElementById("results");
+        if (results.childNodeSize() > 0) {
+            return results.child(0).getElementsByClass("title").attr("href");
+        }
+        return null;
+    }
+
+    public boolean scrapeExists(List<Coordinate> coordinates, String fishName) throws IOException {
+        BoundingBox bbox = new BoundingBox();
+        coordinates.stream().forEach(c -> bbox.add(c));
+        try {
+            String params = URLEncoder.encode(bbox.getMinLng() + " " + bbox.getMinLat() + ","
+                    + bbox.getMinLng() + " " + bbox.getMaxLat() + ","
+                    + bbox.getMaxLng() + " " + bbox.getMaxLat() + ","
+                    + bbox.getMaxLng() + " " + bbox.getMinLat() + ","
+                    + bbox.getMinLat() + " " + bbox.getMinLng(), "utf8");
+            Connection connection = Jsoup.connect(BaseUrls.FISH_OCCURENCE + "?q=" + fishName + "&GEOMETRY=" + params).timeout(TIMEOUT_SEC * 1000);
+            Document doc = connection.get();
+            final String resultsText = doc.getElementsByClass("results").text();
+            return resultsText.contains("results") && !resultsText.contains("0 results");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(FishScraper.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
+    }
+
+    public List<FishImage> scrapeImages(String fishSciName) throws IOException {
+        final String[] genusSpecies = fishSciName.split(" ");
+        Connection connection = Jsoup.connect(BaseUrls.FISH_IMAGES + "?Genus=" + genusSpecies[0] + "&Species=" + genusSpecies[1]).timeout(TIMEOUT_SEC * 1000);
+        List<FishImage> images = new LinkedList<>();
+        Document doc = connection.get();
+        final Elements divs = doc.getElementsByTag("td");
+        divs.stream().filter(e -> e.text().contains("CC-BY")).forEach(e -> {
+            final String src = e.getElementsByTag("img").get(0).attr("src");
+            try {
+                FishImage image = new FishImage(getRawUrl(src), e.getElementsByAttributeValue("href", "#").toString());
+                images.add(image);
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        return images;
+    }
+
+    private String getRawUrl(final String src) throws UnsupportedEncodingException {
+        return URLDecoder.decode(src, "utf8").replace("workimagethumb.php?s=", "").replace("&w=300", "");
+    }
+
+    private enum BaseUrls {
+        FISH_NAMES("http://www.fishbase.org/Country/"), FISH("http://www.fishbase.org/ComNames/"),
+        FISH_PROTECTION("http://www.iucnredlist.org"), FISH_OCCURENCE("http://gbif.org/occurrence/search"),
+        FISH_IMAGES("http://www.fishbase.org/photos/thumbnailssummary.php");
+
+        private final String url;
+
+        private BaseUrls(String url) {
+            this.url = url;
+        }
+
+        @Override
+        public String toString() {
+            return this.url;
+        }
+
+    }
+}

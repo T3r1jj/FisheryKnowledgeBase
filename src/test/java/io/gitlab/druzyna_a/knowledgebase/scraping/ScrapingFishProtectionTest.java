@@ -1,6 +1,6 @@
 package io.gitlab.druzyna_a.knowledgebase.scraping;
 
-import io.gitlab.druzyna_a.knowledgebase.model.Protection;
+import io.gitlab.druzyna_a.knowledgebase.model.FishProtection;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,7 +26,7 @@ public class ScrapingFishProtectionTest {
             Connection connection = Jsoup.connect(baseUrl + protectionUrl).timeout(10 * 1000);
             try {
                 Document doc = connection.get();
-                Protection protection = new Protection();
+                FishProtection protection = new FishProtection();
                 final Element status = doc.getElementsByClass("label").stream().filter(l -> l.text().contains("Red List Category & Criteria")).findFirst().get().parent().child(1);
                 status.getElementsByTag("a").remove();
                 protection.setStatus(status.text());

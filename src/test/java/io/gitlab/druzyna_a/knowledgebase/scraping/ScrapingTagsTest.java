@@ -1,5 +1,6 @@
 package io.gitlab.druzyna_a.knowledgebase.scraping;
 
+import io.gitlab.druzyna_a.knowledgebase.crawling.Crawler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -27,8 +29,10 @@ public class ScrapingTagsTest {
         "http://www.tackledirect.com/",
         "http://fish.shimano.com/content/sac-fish/en/home/products.html"
     };
+    private String fishingBaseUrl = "https://en.wikipedia.org/wiki/Index_of_fishing_articles";
 
     private List<List<String>> tags = new ArrayList<List<String>>();
+    private List<String> fishingTags = new LinkedList<>();
     private ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     @Before
@@ -38,6 +42,7 @@ public class ScrapingTagsTest {
         }
     }
 
+    @Ignore
     @Test
     public void getAllTags() {
         executorService.execute(new Runnable() {
@@ -73,6 +78,18 @@ public class ScrapingTagsTest {
         }
         executorService.shutdown();
         tags.forEach(l -> System.out.println(l));
+    }
+
+    @Test
+    public void getFishingTags() {
+        Connection connection = Jsoup.connect(fishingBaseUrl).timeout(10 * 1000);
+        try {
+            Document doc = connection.get();
+            doc.getElementsByTag("p").stream().forEach(p -> p.getElementsByTag("a").stream().forEach(a -> fishingTags.add(a.text())));
+        } catch (IOException ex) {
+            Logger.getLogger(ScrapingTagsTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println(fishingTags);
     }
 
     enum Tags {

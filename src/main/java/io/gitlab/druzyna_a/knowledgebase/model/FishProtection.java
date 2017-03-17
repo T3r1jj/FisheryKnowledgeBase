@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author Damian Terlecki
  */
 @ApiModel(description = "Protection information about fish in respect of period, weight, length or a combination of those.")
-public class Protection {
+public class FishProtection {
 
     
     @ApiModelProperty(value = "Status", example = "Least Concern")

@@ -44,7 +44,7 @@ public class OverpassFisheryData {
         List<Fishery> fisheries = new LinkedList<>();
         for (OverpassFishery element : elements) {
             if (element.tags.shop == null) {
-                Fishery fishery = new Fishery(new Coordinate(element.lon, element.lat));
+                Fishery fishery = new Fishery(new Coordinate(element.lat, element.lon));
                 fishery.setName(element.tags.name);
                 fishery.setRequirements(element.tags.fishing);
                 fishery.setDescription(element.tags.website);

@@ -1,4 +1,4 @@
-package io.gitlab.druzyna_a.knowledgebase.scraping;
+package io.gitlab.druzyna_a.knowledgebase.crawling;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;

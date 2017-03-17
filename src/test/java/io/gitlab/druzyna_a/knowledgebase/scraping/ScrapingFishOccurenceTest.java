@@ -1,8 +1,6 @@
 package io.gitlab.druzyna_a.knowledgebase.scraping;
 
 import java.net.URLEncoder;
-import java.util.NoSuchElementException;
-import java.util.concurrent.TimeUnit;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -30,8 +28,10 @@ public class ScrapingFishOccurenceTest {
             Document doc = connection.get();
             final String resultsText = doc.getElementsByClass("results").text();
             if (resultsText.contains("results") && !resultsText.contains("0 results")) {
+                System.out.println("EXISTS");
                 return;
             }
+            System.out.println("NOT EXISTS");
             return;
         } catch (Exception e) {
             e.printStackTrace();

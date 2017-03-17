@@ -15,7 +15,7 @@ public class Coordinate {
      */
     public final double lat;
 
-    public Coordinate(double lng, double lat) {
+    public Coordinate(double lat, double lng) {
         this.lng = lng;
         this.lat = lat;
     }
