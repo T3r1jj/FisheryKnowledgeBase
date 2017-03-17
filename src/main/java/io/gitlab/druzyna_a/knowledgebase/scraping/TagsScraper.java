@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,32 +26,35 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("singleton")
 public class TagsScraper {
-
-    private static final int TIMEOUT_SEC = 10;
-
+    
+    private static final int TIMEOUT_SEC = 15;
+    
     private static final String[] BASE_URLS = new String[]{
         "http://www.tackledirect.com/",
         "http://fish.shimano.com/content/sac-fish/en/home/products.html",
         "http://en.wikipedia.org/wiki/Index_of_fishing_articles"
     };
-
+    
     public List<String> scrapeTags(Tags tagsType) {
         int ordinal = tagsType.ordinal();
-        if (ordinal >= ScrapeTags1.values().length) {
+        if (tagsType == Tags.ALL) {
+            return scrapeAllTags(true).stream().flatMap(List::stream).collect(Collectors.toList());
+        } else if (ordinal >= ScrapeTags1.values().length) {
             return scrapeFishingTags();
         } else {
-            return scrapeAllTags().get(ordinal);
+            return scrapeAllTags(false).get(ordinal);
         }
     }
-
-    private List<List<String>> scrapeAllTags() {
+    
+    private List<List<String>> scrapeAllTags(boolean withFishing) {
         List<List<String>> tags = new ArrayList<>();
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
-        for (ScrapeTags1 v : ScrapeTags1.values()) {
+        ExecutorService executorService = Executors.newFixedThreadPool(withFishing ? 3 : 2);
+        int length = ScrapeTags1.values().length;
+        for (int i = 0; i < length; i++) {
             tags.add(Collections.synchronizedList(new LinkedList<>()));
         }
         executorService.execute(() -> {
-            Connection connection = Jsoup.connect(BASE_URLS[0]).timeout(10 * 1000);
+            Connection connection = Jsoup.connect(BASE_URLS[0]).timeout(TIMEOUT_SEC * 1000);
             try {
                 Document doc = connection.get();
                 Arrays.asList(ScrapeTags1.values()).stream().forEach(tt -> doc.getElementsByAttributeValue("href", tt.toString()).get(0).parent().siblingElements().stream().forEach(t -> tags.get(tt.ordinal()).add(t.text())));
@@ -58,9 +62,9 @@ public class TagsScraper {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             }
         });
-
+        
         executorService.execute(() -> {
-            Connection connection = Jsoup.connect(BASE_URLS[1]).timeout(10 * 1000);
+            Connection connection = Jsoup.connect(BASE_URLS[1]).timeout(TIMEOUT_SEC * 1000);
             try {
                 Document doc = connection.get();
                 Arrays.asList(ScrapeTags2.values()).stream().forEach(tt -> doc.getElementsByClass("nav-col").get(tt.ordinal).getElementsByTag("a").stream().forEach(t -> tags.get(tt.getTrueOrdinal()).add(t.text())));
@@ -68,6 +72,13 @@ public class TagsScraper {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             }
         });
+        
+        if (withFishing) {
+            executorService.execute(() -> {
+                tags.add(scrapeFishingTags());
+            });
+        }
+        
         executorService.shutdown();
         try {
             while (!executorService.awaitTermination(100, TimeUnit.MILLISECONDS));
@@ -76,7 +87,7 @@ public class TagsScraper {
         }
         return tags;
     }
-
+    
     public List<String> scrapeFishingTags() {
         Connection connection = Jsoup.connect(BASE_URLS[2]).timeout(TIMEOUT_SEC * 1000);
         try {
@@ -89,32 +100,32 @@ public class TagsScraper {
             return Collections.emptyList();
         }
     }
-
+    
     private enum ScrapeTags1 {
         REELS, RODS, LURES1, TERMINAL, SALTWATER_FISHING_ACCESSORIES;
-
+        
         @Override
         public String toString() {
             return name().toLowerCase().replace("_", "-") + ".html";
         }
-
+        
     }
-
+    
     private enum ScrapeTags2 {
         FISHING_REELS(0), FISHING_RODS(1), CLOTHING(4), GEAR(4), LURES(2);
         private final int ordinal;
-
+        
         private ScrapeTags2(int ordinal) {
             this.ordinal = ordinal;
         }
-
-        public int getTrueOrdinal() {
+        
+        private int getTrueOrdinal() {
             return ordinal;
         }
-
+        
     }
-
+    
     public enum Tags {
-        REELS, RODS, LURES, TACKLE, ACCESSORIES, FISHING
+        REELS, RODS, LURES, TACKLE, ACCESSORIES, FISHING, ALL
     }
 }

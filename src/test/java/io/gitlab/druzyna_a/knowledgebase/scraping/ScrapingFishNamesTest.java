@@ -1,6 +1,6 @@
 package io.gitlab.druzyna_a.knowledgebase.scraping;
 
-import io.gitlab.druzyna_a.knowledgebase.model.FishName;
+import io.gitlab.druzyna_a.knowledgebase.model.offered.FishName;
 import io.gitlab.druzyna_a.knowledgebase.model.utils.IsoUtil;
 import java.util.Iterator;
 import java.util.LinkedList;

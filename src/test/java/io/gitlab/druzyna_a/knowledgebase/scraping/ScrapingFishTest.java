@@ -1,6 +1,6 @@
 package io.gitlab.druzyna_a.knowledgebase.scraping;
 
-import io.gitlab.druzyna_a.knowledgebase.model.Fish;
+import io.gitlab.druzyna_a.knowledgebase.model.offered.Fish;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;

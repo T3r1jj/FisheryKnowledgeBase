@@ -11,7 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
-import io.gitlab.druzyna_a.knowledgebase.model.Weather;
+import io.gitlab.druzyna_a.knowledgebase.model.offered.Weather;
 
 import java.lang.reflect.Type;
 import java.util.LinkedList;

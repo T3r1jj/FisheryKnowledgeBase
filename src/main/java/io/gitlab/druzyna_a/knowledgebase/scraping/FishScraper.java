@@ -1,10 +1,10 @@
 package io.gitlab.druzyna_a.knowledgebase.scraping;
 
-import io.gitlab.druzyna_a.knowledgebase.model.Coordinate;
-import io.gitlab.druzyna_a.knowledgebase.model.Fish;
-import io.gitlab.druzyna_a.knowledgebase.model.FishImage;
-import io.gitlab.druzyna_a.knowledgebase.model.FishName;
-import io.gitlab.druzyna_a.knowledgebase.model.FishProtection;
+import io.gitlab.druzyna_a.knowledgebase.model.offered.Coordinate;
+import io.gitlab.druzyna_a.knowledgebase.model.offered.Fish;
+import io.gitlab.druzyna_a.knowledgebase.model.offered.FishImage;
+import io.gitlab.druzyna_a.knowledgebase.model.offered.FishName;
+import io.gitlab.druzyna_a.knowledgebase.model.offered.FishProtection;
 import io.gitlab.druzyna_a.knowledgebase.model.external.BoundingBox;
 import io.gitlab.druzyna_a.knowledgebase.model.utils.IsoUtil;
 import java.io.IOException;

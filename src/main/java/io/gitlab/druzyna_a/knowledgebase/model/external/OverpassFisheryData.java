@@ -1,7 +1,7 @@
 package io.gitlab.druzyna_a.knowledgebase.model.external;
 
-import io.gitlab.druzyna_a.knowledgebase.model.Coordinate;
-import io.gitlab.druzyna_a.knowledgebase.model.Fishery;
+import io.gitlab.druzyna_a.knowledgebase.model.offered.Coordinate;
+import io.gitlab.druzyna_a.knowledgebase.model.offered.Fishery;
 import java.util.LinkedList;
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package io.gitlab.druzyna_a.knowledgebase.model.external;
 
-import io.gitlab.druzyna_a.knowledgebase.model.Coordinate;
+import io.gitlab.druzyna_a.knowledgebase.model.offered.Coordinate;
 import java.util.Arrays;
 import java.util.List;
 

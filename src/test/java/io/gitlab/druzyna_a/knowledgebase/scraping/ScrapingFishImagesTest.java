@@ -1,6 +1,6 @@
 package io.gitlab.druzyna_a.knowledgebase.scraping;
 
-import io.gitlab.druzyna_a.knowledgebase.model.FishImage;
+import io.gitlab.druzyna_a.knowledgebase.model.offered.FishImage;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;

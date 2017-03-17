@@ -1,4 +1,4 @@
-package io.gitlab.druzyna_a.knowledgebase.model;
+package io.gitlab.druzyna_a.knowledgebase.model.offered;
 
 /**
  *

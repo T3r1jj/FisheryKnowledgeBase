@@ -1,9 +1,9 @@
 package io.gitlab.druzyna_a.knowledgebase.rest.offered;
 
 import com.google.gson.GsonBuilder;
-import io.gitlab.druzyna_a.knowledgebase.model.Fishery;
+import io.gitlab.druzyna_a.knowledgebase.model.offered.Fishery;
 import io.gitlab.druzyna_a.knowledgebase.model.utils.IsoUtil;
-import io.gitlab.druzyna_a.knowledgebase.model.Weather;
+import io.gitlab.druzyna_a.knowledgebase.model.offered.Weather;
 import io.gitlab.druzyna_a.knowledgebase.model.external.OpenWeather;
 import io.gitlab.druzyna_a.knowledgebase.model.external.OverpassFisheryData;
 import io.gitlab.druzyna_a.knowledgebase.rest.external.OpenWeatherService;
