@@ -10,7 +10,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.gitlab.druzyna_a.knowledgebase.db.ArticleRepository;
 import io.gitlab.druzyna_a.knowledgebase.model.offered.ArticlesRequest.Article;
+import io.gitlab.druzyna_a.totp4j.TOTP;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 
 /**
@@ -24,10 +30,18 @@ public class ArticleRestController implements ArticleApi {
     private TagsScraper tagsScraper;
     @Autowired
     private ArticleRepository articlesRepository;
+    @Value("${io.gitlab.druzyna_a.knowledgebase.totp_interval}")
+    private int totpInterval;
+    @Value("${io.gitlab.druzyna_a.knowledgebase.totp_key}")
+    private String totpKey;
+    @Value("${io.gitlab.druzyna_a.knowledgebase.totp_token_length}")
+    private int totpTokenLength;
+    @Value("${io.gitlab.druzyna_a.knowledgebase.totp_hmac_algorithm}")
+    private String totpHmacAlgorithm;
 
     @Override
     public ResponseEntity<List<Article>> fetchArticles(@ApiParam(value = "Id of articles request", required = true) @RequestParam String id,
-            @ApiParam(value = "API token", required = true) @RequestParam String token) {
+            @ApiParam(value = "API token", required = true) @RequestParam int token) {
         if (!isTokenValid(token)) {
             return ResponseEntity.status(403).build();
         }
@@ -46,7 +60,7 @@ public class ArticleRestController implements ArticleApi {
 
     @Override
     public ResponseEntity<String> requestArticles(@ApiParam(value = "Tags", required = true) @RequestParam List<String> tags,
-            @ApiParam(value = "API token", required = true) @RequestParam String token,
+            @ApiParam(value = "API token", required = true) @RequestParam int token,
             @ApiParam(value = "Minimal number of tags required to be found in article", defaultValue = "1") @RequestParam(required = false) int requiredTagsCount) {
         if (!isTokenValid(token)) {
             return ResponseEntity.status(403).build();
@@ -65,8 +79,19 @@ public class ArticleRestController implements ArticleApi {
         return ResponseEntity.ok(tagsScraper.scrapeTags(TagsScraper.Tags.valueOf(tagsType.toUpperCase())));
     }
 
-    private boolean isTokenValid(String token) {
-        return true;
+    private boolean isTokenValid(int token) {
+        try {
+            return new TOTP.Builder()
+                    .setInterval(totpInterval)
+                    .setKey(totpKey)
+                    .setT0(System.currentTimeMillis() / 1000)
+                    .setTokenLength(totpTokenLength)
+                    .setAlgorithm(totpHmacAlgorithm)
+                    .createTOTP().isTokenValid(token);
+        } catch (InvalidKeyException | NoSuchAlgorithmException ex) {
+            Logger.getLogger(ArticleRestController.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 
 }

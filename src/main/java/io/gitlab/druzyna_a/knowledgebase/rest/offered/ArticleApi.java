@@ -31,7 +31,7 @@ public interface ArticleApi {
         , @ApiResponse(code = 404, message = "Request not found", response = Void.class)})
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     ResponseEntity<List<Article>> fetchArticles(@ApiParam(value = "Id of articles request", required = true) @RequestParam String id,
-            @ApiParam(value = "API token", required = true) @RequestParam String token);
+            @ApiParam(value = "API token", required = true) @RequestParam int token);
 
     @ApiOperation(httpMethod = "POST", value = "Request articles scrap by tags. The request will queued and associated id will be returned. Refer to other resoruce for articles fetching.", consumes = "application/json")
     @ApiResponses(value = {
@@ -41,7 +41,7 @@ public interface ArticleApi {
     })
     @RequestMapping(path = "request", method = RequestMethod.POST, consumes = "application/json")
     ResponseEntity<String> requestArticles(@ApiParam(value = "Tags", required = true) @RequestParam List<String> tags,
-            @ApiParam(value = "API token", required = true) @RequestParam String token,
+            @ApiParam(value = "API token", required = true) @RequestParam int token,
             @ApiParam(value = "Minimal number of tags required to be found in article", defaultValue = "1") @RequestParam(required = false) int requiredTagsCount);
 
     @ApiOperation(httpMethod = "GET", value = "Fetch rod tags that could be used when requesting articles")
