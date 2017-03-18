@@ -54,10 +54,10 @@ public class FishScraper {
             while (it.hasNext()) {
                 it.next();
                 it.next();
-                String species = it.next().text();
+                String species = it.next().text().replace("\u00a0", "");
                 it.next();
-                String name = it.next().text();
-                String localName = it.next().text();
+                String name = it.next().text().replace("\u00a0", "");
+                String localName = it.next().text().replace("\u00a0", "");
                 fishNames.add(new FishName(name, species, localName));
             }
             pageIndex++;

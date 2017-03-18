@@ -47,7 +47,7 @@ public interface FishApi {
         , @ApiResponse(code = 404, message = "Fish or protection not found", response = Void.class)
         , @ApiResponse(code = 502, message = "Error while connecting to upstream server, try again later", response = Void.class)})
     @RequestMapping(path = "/protection", method = RequestMethod.GET, produces = "application/json")
-    ResponseEntity<FishProtection> fetchFishProtections(@ApiParam(value = "Scientific name of the fish", required = true)
+    ResponseEntity<FishProtection> fetchFishProtection(@ApiParam(value = "Scientific name of the fish", required = true)
             @RequestParam String name);
 
     @ApiOperation(httpMethod = "GET", value = "Fetch additional images of fish by name")

@@ -9,7 +9,7 @@ import org.springframework.data.repository.Repository;
  *
  * @author Damian Terlecki
  */
-public interface ArticleRepository extends Repository<ArticlesRequest, String> {
+public interface ArticlesRepository extends Repository<ArticlesRequest, String> {
 
     void delete(ArticlesRequest deleted);
     
@@ -18,6 +18,7 @@ public interface ArticleRepository extends Repository<ArticlesRequest, String> {
     List<ArticlesRequest> findByScraped(boolean scraped);
     List<ArticlesRequest> findByScrapedOrderByTimeAsc(boolean scraped);
     List<ArticlesRequest> findByScrapedOrderByTimeDesc(boolean scraped);
+    Optional<ArticlesRequest> findFirstByScrapedOrderByTimeAsc(boolean scraped);
 
     Optional<ArticlesRequest> findOne(String id);
 

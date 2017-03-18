@@ -1,5 +1,7 @@
 package io.gitlab.druzyna_a.knowledgebase.rest.offered;
 
+import io.gitlab.druzyna_a.knowledgebase.crawling.CrawlerController;
+import io.gitlab.druzyna_a.knowledgebase.db.ArticlesRepositoryCleaner;
 import io.gitlab.druzyna_a.knowledgebase.model.offered.ArticlesRequest;
 import io.gitlab.druzyna_a.knowledgebase.scraping.TagsScraper;
 import io.swagger.annotations.ApiParam;
@@ -8,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import io.gitlab.druzyna_a.knowledgebase.db.ArticleRepository;
 import io.gitlab.druzyna_a.knowledgebase.model.offered.ArticlesRequest.Article;
 import io.gitlab.druzyna_a.totp4j.TOTP;
 import java.security.InvalidKeyException;
@@ -18,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
+import io.gitlab.druzyna_a.knowledgebase.db.ArticlesRepository;
 
 /**
  *
@@ -29,7 +31,12 @@ public class ArticleRestController implements ArticleApi {
     @Autowired
     private TagsScraper tagsScraper;
     @Autowired
-    private ArticleRepository articlesRepository;
+    private ArticlesRepository articlesRepository;
+    @Autowired
+    private CrawlerController crawlerController;
+    @Autowired
+    private ArticlesRepositoryCleaner articlesCleaner;
+
     @Value("${io.gitlab.druzyna_a.knowledgebase.totp_interval}")
     private int totpInterval;
     @Value("${io.gitlab.druzyna_a.knowledgebase.totp_key}")
@@ -45,11 +52,13 @@ public class ArticleRestController implements ArticleApi {
         if (!isTokenValid(token)) {
             return ResponseEntity.status(403).build();
         }
-        Optional<ArticlesRequest> articlesRequest = articlesRepository.findOne(id);
-        if (articlesRequest.isPresent()) {
-            ArticlesRequest articles = articlesRequest.get();
-            if (articles.isScraped()) {
-                return ResponseEntity.ok(articles.getArticles());
+        Optional<ArticlesRequest> possibleRequest = articlesRepository.findOne(id);
+        if (possibleRequest.isPresent()) {
+            ArticlesRequest articlesRequest = possibleRequest.get();
+            if (articlesRequest.isScraped()) {
+                List<Article> articles = articlesRequest.getArticles();
+                articlesRepository.delete(articlesRequest);
+                return ResponseEntity.ok(articles);
             } else {
                 return ResponseEntity.status(202).build();
             }
@@ -61,6 +70,8 @@ public class ArticleRestController implements ArticleApi {
     @Override
     public ResponseEntity<String> requestArticles(@ApiParam(value = "Tags", required = true) @RequestParam List<String> tags,
             @ApiParam(value = "API token", required = true) @RequestParam int token,
+            @ApiParam(value = "Is it a quick search? Quick search takes less than 15 minutes while slow lasts from 15 to 150 minutes depending on the connection speed.",
+                    defaultValue = "true", allowableValues = "true, false", required = true) @RequestParam() boolean quick,
             @ApiParam(value = "Minimal number of tags required to be found in article", defaultValue = "1") @RequestParam(required = false) int requiredTagsCount) {
         if (!isTokenValid(token)) {
             return ResponseEntity.status(403).build();
@@ -68,8 +79,10 @@ public class ArticleRestController implements ArticleApi {
         if (articlesRepository.countByScraped(false) > UNSCRAPED_ARTICLES_QUEUE_LIMIT) {
             return ResponseEntity.status(429).build();
         }
-        ArticlesRequest article = new ArticlesRequest(tags, requiredTagsCount);
-        String id = articlesRepository.save(article).getId();
+        ArticlesRequest articleRequest = new ArticlesRequest(tags, Math.min(tags.size(), Math.max(requiredTagsCount, 1)));
+        articleRequest.setQuick(quick);
+        String id = articlesRepository.save(articleRequest).getId();
+        crawlerController.run();
         return ResponseEntity.ok(id);
     }
 
@@ -80,6 +93,8 @@ public class ArticleRestController implements ArticleApi {
     }
 
     private boolean isTokenValid(int token) {
+        articlesCleaner.run();
+        crawlerController.run();
         try {
             return new TOTP.Builder()
                     .setInterval(totpInterval)

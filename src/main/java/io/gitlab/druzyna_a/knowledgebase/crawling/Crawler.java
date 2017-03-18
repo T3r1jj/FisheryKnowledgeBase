@@ -17,11 +17,10 @@ import org.jsoup.nodes.Document;
  * crawler checks if page should be visited (ScrapeCommand), if true it invokes
  * scrape and for every valid link a new Scraper is instantiated to be run in
  * fixed thread pool.
- * 
- * Use {@link ScrapeCommand} to implement scraping. Think about:
- * 1. Black list of webpages
- * 2. Skipping already visited pages
- * 3. Delay when accessing same host to not put too much load on the web
+ *
+ * Use {@link ScrapeCommand} to implement scraping. Think about: 1. Black list
+ * of webpages 2. Skipping already visited pages 3. Delay when accessing same
+ * host to not put too much load on the web
  *
  * @author Damian Terlecki
  */
@@ -29,6 +28,7 @@ public class Crawler implements Runnable {
 
     private static final String USER_AGENT
             = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1";
+    private static final int TIMEOUT_SEC = 10;
     private final String baseUrl;
     private final ScrapeCommand scrapeCommand;
     private final int pagesDepth;
@@ -55,12 +55,11 @@ public class Crawler implements Runnable {
     public void run() {
         try {
             sem.acquire();
-            if (scrapeCommand.shouldVisit(baseUrl) || main) {
+            if (pagesDepth > 0 && (scrapeCommand.shouldVisit(baseUrl) || main)) {
                 System.out.println("CONNECTING TO: " + baseUrl);
-                final Connection connection = Jsoup.connect(baseUrl).timeout(10 * 1000).userAgent(USER_AGENT);
+                final Connection connection = Jsoup.connect(baseUrl).timeout(TIMEOUT_SEC * 1000).userAgent(USER_AGENT);
                 final Document doc = connection.get();
                 System.out.println("Im at " + pagesDepth + " depth on: " + doc.baseUri());
-                scrapeCommand.scrape(doc);
                 doc.select("a[href]").stream().filter(l -> !l.attr("href").equals("#") && !l.absUrl("href").isEmpty()).forEach(l -> {
                     final String url = l.absUrl("href");
                     final Crawler crawler = new Crawler(url, scrapeCommand, pagesDepth - 1);
@@ -68,9 +67,10 @@ public class Crawler implements Runnable {
                     crawler.setSemaphore(sem);
                     executorService.execute(crawler);
                 });
+                scrapeCommand.scrape(doc);
                 if (main) {
                     while (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
-                        if (sem.tryAcquire(threadPool + 1)) {
+                        if (sem.tryAcquire(threadPool)) {
                             executorService.shutdown();
                         }
                     }

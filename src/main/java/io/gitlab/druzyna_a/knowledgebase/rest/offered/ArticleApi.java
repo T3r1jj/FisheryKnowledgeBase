@@ -23,9 +23,9 @@ public interface ArticleApi {
 
     static final int UNSCRAPED_ARTICLES_QUEUE_LIMIT = 100;
 
-    @ApiOperation(httpMethod = "GET", value = "Fetch articles by assigned request id.")
+    @ApiOperation(httpMethod = "GET", value = "Fetch articles by assigned request id. Fetched articles will be no longer accessible after successful fetch request.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "List of found articles", response = Article.class, responseContainer = "List")
+        @ApiResponse(code = 200, message = "List of found articles. After this response the data will be no longer accessible.", response = Article.class, responseContainer = "List")
         , @ApiResponse(code = 202, message = "Pending search...", response = Void.class)
         , @ApiResponse(code = 403, message = "Invalid token", response = Void.class)
         , @ApiResponse(code = 404, message = "Request not found", response = Void.class)})
@@ -42,6 +42,8 @@ public interface ArticleApi {
     @RequestMapping(path = "request", method = RequestMethod.POST, consumes = "application/json")
     ResponseEntity<String> requestArticles(@ApiParam(value = "Tags", required = true) @RequestParam List<String> tags,
             @ApiParam(value = "API token", required = true) @RequestParam int token,
+            @ApiParam(value = "Is it a quick search? Quick search takes less than 15 minutes while slow one lasts from 15 to 150 minutes depending on the connection speed.",
+                    defaultValue = "true", allowableValues = "true, false", required = true) @RequestParam() boolean quick,
             @ApiParam(value = "Minimal number of tags required to be found in article", defaultValue = "1") @RequestParam(required = false) int requiredTagsCount);
 
     @ApiOperation(httpMethod = "GET", value = "Fetch rod tags that could be used when requesting articles")

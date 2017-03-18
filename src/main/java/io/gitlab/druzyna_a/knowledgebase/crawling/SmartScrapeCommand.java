@@ -20,7 +20,8 @@ public abstract class SmartScrapeCommand implements ScrapeCommand {
 
     private static final int SAME_HOST_DELAY_MS = 1000;
     private final List<String> blackList = Arrays.asList(new String[]{
-        "facebook", "twitter", "instagram", ".google", "youtube", "&action=edit"
+        "facebook", "twitter", "instagram", "google", "youtube", "&action=edit",
+        "youtu.be", "ceneo", "ebay", "eBay", "nokaut", "amazon"
     });
     private final List<String> visitedUrls = new LinkedList<>();
     private final Map<String, Long> visitedHostTimes = new HashMap<>();
@@ -28,7 +29,7 @@ public abstract class SmartScrapeCommand implements ScrapeCommand {
 
     @Override
     public boolean shouldVisit(String url) {
-        if (blackList.stream().anyMatch(i -> url.matches(".*" + i + ".*"))) {
+        if (blackList.stream().anyMatch(i -> url.contains(i))) {
             return false;
         }
 

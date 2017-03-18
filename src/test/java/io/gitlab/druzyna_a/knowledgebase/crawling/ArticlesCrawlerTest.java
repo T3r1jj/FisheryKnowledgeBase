@@ -1,4 +1,4 @@
-package io.gitlab.druzyna_a.knowledgebase.scraping;
+package io.gitlab.druzyna_a.knowledgebase.crawling;
 
 import io.gitlab.druzyna_a.knowledgebase.crawling.SmartScrapeCommand;
 import io.gitlab.druzyna_a.knowledgebase.crawling.Crawler;

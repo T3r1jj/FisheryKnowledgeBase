@@ -44,8 +44,8 @@ public class FishRestController implements FishApi {
     }
 
     @Override
-    public ResponseEntity<FishProtection> fetchFishProtections(@ApiParam(value = "Name of the fish", allowableValues = "string", required = true)
-            @RequestParam(required = true) String name) {
+    public ResponseEntity<FishProtection> fetchFishProtection(@ApiParam(value = "Scientific name of the fish", required = true)
+            @RequestParam String name) {
         try {
             final Optional<FishProtection> fishProtection = fishScraper.scrapeFishProtection(name);
             if (fishProtection.isPresent()) {

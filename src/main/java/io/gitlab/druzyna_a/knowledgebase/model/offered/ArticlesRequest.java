@@ -2,6 +2,7 @@ package io.gitlab.druzyna_a.knowledgebase.model.offered;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.Instant;
 import java.util.List;
 import org.springframework.data.annotation.Id;
 
@@ -18,6 +19,7 @@ public class ArticlesRequest {
     private List<String> tags;
     private int requiredTagsCount;
     private List<Article> articles;
+    private boolean quick;
 
     public ArticlesRequest() {
     }
@@ -31,7 +33,7 @@ public class ArticlesRequest {
         return time;
     }
 
-    public void setTime(Long time) {
+    private void setTime(Long time) {
         this.time = time;
     }
 
@@ -41,6 +43,7 @@ public class ArticlesRequest {
 
     public void setScraped(boolean scraped) {
         this.scraped = scraped;
+        setTime(Instant.now().getEpochSecond());
     }
 
     public String getId() {
@@ -70,7 +73,15 @@ public class ArticlesRequest {
     public void setArticles(List<Article> articles) {
         this.articles = articles;
     }
-    
+
+    public boolean isQuick() {
+        return quick;
+    }
+
+    public void setQuick(boolean quick) {
+        this.quick = quick;
+    }
+
     @ApiModel
     public static class Article {
 
@@ -78,8 +89,10 @@ public class ArticlesRequest {
         private String title;
         @ApiModelProperty
         private String description;
-        @ApiModelProperty
+        @ApiModelProperty(value = "Author or scraped site url")
         private String author;
+        @ApiModelProperty(value = "Image url")
+        private String image;
 
         public String getTitle() {
             return title;
@@ -97,6 +110,18 @@ public class ArticlesRequest {
             this.description = description;
         }
 
+        public void appendDescription(String description) {
+            if (isEmpty()) {
+                this.description = description;
+            } else {
+                this.description += "<br/>" + description;
+            }
+        }
+
+        public boolean isEmpty() {
+            return description == null || description.isEmpty();
+        }
+
         public String getAuthor() {
             return author;
         }
@@ -104,6 +129,15 @@ public class ArticlesRequest {
         public void setAuthor(String author) {
             this.author = author;
         }
+
+        public String getImage() {
+            return image;
+        }
+
+        public void setImage(String image) {
+            this.image = image;
+        }
+
     }
 
 }

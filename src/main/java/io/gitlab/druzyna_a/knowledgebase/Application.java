@@ -8,7 +8,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import io.gitlab.druzyna_a.knowledgebase.crawling.CrawlerController;
+import io.gitlab.druzyna_a.knowledgebase.db.ArticlesRepositoryCleaner;
 import io.gitlab.druzyna_a.knowledgebase.rest.offered.FishRestController;
+import java.util.concurrent.Executor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,6 +19,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -28,17 +34,31 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableSwagger2
+@EnableAsync
 @ComponentScan(basePackageClasses = {
     RedirectController.class,
     FishRestController.class
 })
-public class Application {
+public class Application extends AsyncConfigurerSupport{
 
     @Value("${build.version}")
     private String buildVersion;
 
     public static void main(String[] args) {
         ApplicationContext ctx = SpringApplication.run(Application.class, args);
+        ctx.getBean(ArticlesRepositoryCleaner.class).run();
+        ctx.getBean(CrawlerController.class).run();
+    }
+    
+    @Override
+    public Executor getAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(3);
+        executor.setMaxPoolSize(4);
+        executor.setQueueCapacity(500);
+        executor.setThreadNamePrefix("KnowledgeBase-");
+        executor.initialize();
+        return executor;
     }
 
     @Bean
