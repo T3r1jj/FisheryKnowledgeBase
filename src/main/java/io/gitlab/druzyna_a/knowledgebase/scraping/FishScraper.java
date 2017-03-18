@@ -80,7 +80,7 @@ public class FishScraper {
         Document doc = connection.post();
         Element content = doc.body();
         Elements links = content.getElementsByTag("a");
-        final List<Element> fishLinks = links.stream().filter(l -> l.attr("href").contains("SpeciesSummary.php")).collect(Collectors.toList());
+        List<Element> fishLinks = links.stream().filter(l -> l.attr("href").contains("SpeciesSummary.php")).collect(Collectors.toList());
         return fishLinks.get(0).attr("href");
     }
 
@@ -88,11 +88,11 @@ public class FishScraper {
         Connection connection = Jsoup.connect(BaseUrls.FISH + url).timeout(TIMEOUT_SEC * 1000);
         Document doc = connection.get();
         Fish fish = new Fish(fishName);
-        final Element sciName = doc.getElementById("ss-sciname").getElementsByClass("sciname").get(0);
+        Element sciName = doc.getElementById("ss-sciname").getElementsByClass("sciname").get(0);
         fish.setSciName(getDivSpanContent(sciName));
-        final Element main = doc.getElementById("ss-main");
-        final Elements divs = main.getElementsByTag("div");
-        final Element maturity = divs.get(4);
+        Element main = doc.getElementById("ss-main");
+        Elements divs = main.getElementsByTag("div");
+        Element maturity = divs.get(4);
         float length;
         try {
             length = Float.parseFloat(maturity.text().split(" ")[2].replace(',', '\0'));
@@ -100,12 +100,12 @@ public class FishScraper {
         } catch (NumberFormatException ex) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
         }
-        final Element description = divs.get(5);
+        Element description = divs.get(5);
         fish.setDescription(getDivSpanContent(description));
-        final Element biology = divs.get(7);
+        Element biology = divs.get(7);
         fish.setBiology(getDivSpanContent(biology));
-        final Element estimation = main.getElementsByClass("smallSpace").select("div:contains(length-weight)").get(0).child(1);
-        final String[] splits = estimation.text().split("=");
+        Element estimation = main.getElementsByClass("smallSpace").select("div:contains(length-weight)").get(0).child(1);
+        String[] splits = estimation.text().split("=");
         float a, b;
         try {
             a = Float.parseFloat(splits[1].split(" ")[0]);
@@ -125,7 +125,7 @@ public class FishScraper {
                 e.unwrap();
             }
         });
-        final Element span = element.getElementsByTag("span").get(0);
+        Element span = element.getElementsByTag("span").get(0);
         return span.text().replace(" (Ref. )", "");
     }
 
@@ -135,13 +135,13 @@ public class FishScraper {
             Connection connection = Jsoup.connect(BaseUrls.FISH_PROTECTION + protectionUrl).timeout(TIMEOUT_SEC * 1000);
             Document doc = connection.get();
             FishProtection protection = new FishProtection();
-            final Element status = doc.getElementsByClass("label").stream().filter(l -> l.text().contains("Red List Category & Criteria")).findFirst().get().parent().child(1);
+            Element status = doc.getElementsByClass("label").stream().filter(l -> l.text().contains("Red List Category & Criteria")).findFirst().get().parent().child(1);
             status.getElementsByTag("a").remove();
             protection.setStatus(status.text());
-            final Element assessment = doc.getElementsByTag("td").stream().filter(td -> td.text().contains("Justification:")).findFirst().get();
+            Element assessment = doc.getElementsByTag("td").stream().filter(td -> td.text().contains("Justification:")).findFirst().get();
             protection.setAssessment(assessment.text());
             doc.getElementsByClass("label").stream().filter(l -> l.text().contains("Use and Trade:")).findFirst().ifPresent(l -> protection.setUseAndTrade(l.parent().child(1).text()));
-            final Element conservation = doc.getElementsByClass("label").stream().filter(l -> l.text().contains("Conservation Actions:")).findFirst().get().parent().child(1);
+            Element conservation = doc.getElementsByClass("label").stream().filter(l -> l.text().contains("Conservation Actions:")).findFirst().get().parent().child(1);
             protection.setConservation(conservation.text());
             return Optional.of(protection);
         }
@@ -151,7 +151,7 @@ public class FishScraper {
     private String getProtectionUrl(String fishSciName) throws IOException {
         Connection connection = Jsoup.connect(BaseUrls.FISH_PROTECTION + "/search/external").timeout(TIMEOUT_SEC * 1000).data("text", fishSciName);
         Document doc = connection.post();
-        final Element results = doc.getElementById("results");
+        Element results = doc.getElementById("results");
         if (results.childNodeSize() > 0) {
             return results.child(0).getElementsByClass("title").attr("href");
         }
@@ -169,7 +169,7 @@ public class FishScraper {
                     + bbox.getMinLat() + " " + bbox.getMinLng(), "utf8");
             Connection connection = Jsoup.connect(BaseUrls.FISH_OCCURENCE + "?q=" + fishName + "&GEOMETRY=" + params).timeout(TIMEOUT_SEC * 1000);
             Document doc = connection.get();
-            final String resultsText = doc.getElementsByClass("results").text();
+            String resultsText = doc.getElementsByClass("results").text();
             return resultsText.contains("results") && !resultsText.contains("0 results");
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(FishScraper.class.getName()).log(Level.SEVERE, null, ex);
@@ -179,13 +179,13 @@ public class FishScraper {
     }
 
     public List<FishImage> scrapeImages(String fishSciName) throws IOException {
-        final String[] genusSpecies = fishSciName.split(" ");
+        String[] genusSpecies = fishSciName.split(" ");
         Connection connection = Jsoup.connect(BaseUrls.FISH_IMAGES + "?Genus=" + genusSpecies[0] + "&Species=" + genusSpecies[1]).timeout(TIMEOUT_SEC * 1000);
         List<FishImage> images = new LinkedList<>();
         Document doc = connection.get();
-        final Elements divs = doc.getElementsByTag("td");
+        Elements divs = doc.getElementsByTag("td");
         divs.stream().filter(e -> e.text().contains("CC-BY")).forEach(e -> {
-            final String src = e.getElementsByTag("img").get(0).attr("src");
+            String src = e.getElementsByTag("img").get(0).attr("src");
             try {
                 FishImage image = new FishImage(getRawUrl(src), e.getElementsByAttributeValue("href", "#").toString());
                 images.add(image);
@@ -196,7 +196,7 @@ public class FishScraper {
         return images;
     }
 
-    private String getRawUrl(final String src) throws UnsupportedEncodingException {
+    private String getRawUrl(String src) throws UnsupportedEncodingException {
         return URLDecoder.decode(src, "utf8").replace("workimagethumb.php?s=", "").replace("&w=300", "");
     }
 

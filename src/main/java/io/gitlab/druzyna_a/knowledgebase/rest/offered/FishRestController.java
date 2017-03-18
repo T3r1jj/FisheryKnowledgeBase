@@ -31,7 +31,7 @@ public class FishRestController implements FishApi {
     @Override
     public ResponseEntity<Fish> fetchFish(@ApiParam(value = "Name of the fish", required = true) @PathVariable("name") String name) {
         try {
-            final Optional<Fish> fish = fishScraper.scrapeFish(name);
+            Optional<Fish> fish = fishScraper.scrapeFish(name);
             if (fish.isPresent()) {
                 return ResponseEntity.ok(fish.get());
             } else {
@@ -47,7 +47,7 @@ public class FishRestController implements FishApi {
     public ResponseEntity<FishProtection> fetchFishProtection(@ApiParam(value = "Scientific name of the fish", required = true)
             @RequestParam String name) {
         try {
-            final Optional<FishProtection> fishProtection = fishScraper.scrapeFishProtection(name);
+            Optional<FishProtection> fishProtection = fishScraper.scrapeFishProtection(name);
             if (fishProtection.isPresent()) {
                 return ResponseEntity.ok(fishProtection.get());
             } else {
@@ -86,7 +86,7 @@ public class FishRestController implements FishApi {
     @Override
     public ResponseEntity<List<FishName>> fetchFishes(@ApiParam(value = "Country code ISO 3166-1 alpha-2", required = true, example = "PL") @RequestParam String countryCode) {
         try {
-            final Optional<List<FishName>> fishNames = fishScraper.scrapeFishNames(countryCode);
+            Optional<List<FishName>> fishNames = fishScraper.scrapeFishNames(countryCode);
             if (fishNames.isPresent()) {
                 return ResponseEntity.ok(fishNames.get());
             } else {

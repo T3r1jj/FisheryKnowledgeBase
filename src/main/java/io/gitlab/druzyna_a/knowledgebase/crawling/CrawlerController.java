@@ -96,7 +96,7 @@ public class CrawlerController {
                 Elements divs = document.select("div");
                 Elements innerMostDivs = new Elements();
                 divs.stream().filter(div -> div.select(">div").isEmpty()).forEach(div -> innerMostDivs.add(div));
-                final List<Element> resultDivs = innerMostDivs.stream().filter(div -> {
+                List<Element> resultDivs = innerMostDivs.stream().filter(div -> {
                     return articlesRequest.getTags().stream().filter(tag -> div.text().toLowerCase().contains(tag.toLowerCase())).count() >= articlesRequest.getRequiredTagsCount()
                             && isPotentiallyValuable(div);
 

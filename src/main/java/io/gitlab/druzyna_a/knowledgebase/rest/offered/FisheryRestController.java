@@ -49,11 +49,11 @@ public class FisheryRestController implements FisheryApi {
                 .baseUrl(OverpassApi.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        final OverpassApi api = retrofit.create(OverpassApi.class);
+        OverpassApi api = retrofit.create(OverpassApi.class);
         Call<OverpassFisheryData> overpassCall = api.getLocations(query);
         try {
-            final Response<OverpassFisheryData> response = overpassCall.execute();
-            final List<Fishery> fisheries = response.body().toFisheries();
+            Response<OverpassFisheryData> response = overpassCall.execute();
+            List<Fishery> fisheries = response.body().toFisheries();
             return ResponseEntity.ok().body(fisheries);
         } catch (IOException ex) {
             Logger.getLogger(FisheryRestController.class.getName()).log(Level.SEVERE, null, ex);
@@ -76,7 +76,7 @@ public class FisheryRestController implements FisheryApi {
                                 ).create()
                         )
                 ).build();
-        final OpenWeatherService service = retrofit.create(OpenWeatherService.class);
+        OpenWeatherService service = retrofit.create(OpenWeatherService.class);
         Call<OpenWeather> openWeatherCall = service.getWeather(lng, lat, OPEN_WEATHER_MAP_APP_ID);
         weatherCallCounter.call();
         try {
@@ -100,7 +100,7 @@ public class FisheryRestController implements FisheryApi {
         if (time == 0) {
             time = Instant.now().getEpochSecond();
         }
-        final long requestedTime = time;
+        long requestedTime = time;
         long epochSecondsHourAgo = Instant.now().getEpochSecond() - (60 * 60);
         long epochSecondsIn5days = Instant.now().getEpochSecond() + 5 * 60 * 60 * 24;
         if (time < epochSecondsHourAgo || time > epochSecondsIn5days) {
@@ -115,7 +115,7 @@ public class FisheryRestController implements FisheryApi {
                                 ).create()
                         )
                 ).build();
-        final OpenWeatherService service = retrofit.create(OpenWeatherService.class);
+        OpenWeatherService service = retrofit.create(OpenWeatherService.class);
         Call<OpenWeather.Forecast> openWeatherCall = service.getForecast(lng, lat, OPEN_WEATHER_MAP_APP_ID);
         weatherCallCounter.call();
         try {

@@ -56,13 +56,11 @@ public class Crawler implements Runnable {
         try {
             sem.acquire();
             if (pagesDepth > 0 && (scrapeCommand.shouldVisit(baseUrl) || main)) {
-                System.out.println("CONNECTING TO: " + baseUrl);
-                final Connection connection = Jsoup.connect(baseUrl).timeout(TIMEOUT_SEC * 1000).userAgent(USER_AGENT);
-                final Document doc = connection.get();
-                System.out.println("Im at " + pagesDepth + " depth on: " + doc.baseUri());
+                Connection connection = Jsoup.connect(baseUrl).timeout(TIMEOUT_SEC * 1000).userAgent(USER_AGENT);
+                Document doc = connection.get();
                 doc.select("a[href]").stream().filter(l -> !l.attr("href").equals("#") && !l.absUrl("href").isEmpty()).forEach(l -> {
-                    final String url = l.absUrl("href");
-                    final Crawler crawler = new Crawler(url, scrapeCommand, pagesDepth - 1);
+                    String url = l.absUrl("href");
+                    Crawler crawler = new Crawler(url, scrapeCommand, pagesDepth - 1);
                     crawler.setExecutorService(executorService);
                     crawler.setSemaphore(sem);
                     executorService.execute(crawler);
