@@ -36,9 +36,9 @@
     
     <repositories>
         <repository>
-            <id>in-project</id>
+            <id>in.project</id>
             <name>In Project Repo</name>
-            <url>file://${project.basedir}/libs</url>
+            <url>file:${project.basedir}/libs</url>
         </repository>
     </repositories>
     
