@@ -133,7 +133,7 @@ public class FisheryRestController implements FisheryApi {
         StringWriter sw = new StringWriter();
         ex.printStackTrace(new PrintWriter(sw));
         String exception = sw.toString();
-        return ResponseEntity.status(404).header("Warning", exception).build();
+        return ResponseEntity.status(502).header("Warning", exception).build();
     }
 
 }
