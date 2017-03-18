@@ -19,6 +19,8 @@ public class FishProtection {
     private String useAndTrade;
     @ApiModelProperty(value = "Conservation actions", example = "To address the critical situation faced by Grauer’s Gorillas, NGOs are working with the government authorities to support protected areas and reinforce conservation programmes.")
     private String conservation;
+    @ApiModelProperty(value = "Copyright link", example = "http://...")
+    private String copyright;
 
     public String getStatus() {
         return status;
@@ -50,6 +52,14 @@ public class FishProtection {
 
     public void setConservation(String conservation) {
         this.conservation = conservation;
+    }
+
+    public String getCopyright() {
+        return copyright;
+    }
+
+    public void setCopyright(String copyright) {
+        this.copyright = copyright;
     }
 
 }

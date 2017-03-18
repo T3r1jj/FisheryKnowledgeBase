@@ -143,6 +143,7 @@ public class FishScraper {
             doc.getElementsByClass("label").stream().filter(l -> l.text().contains("Use and Trade:")).findFirst().ifPresent(l -> protection.setUseAndTrade(l.parent().child(1).text()));
             Element conservation = doc.getElementsByClass("label").stream().filter(l -> l.text().contains("Conservation Actions:")).findFirst().get().parent().child(1);
             protection.setConservation(conservation.text());
+            protection.setCopyright(doc.baseUri());
             return Optional.of(protection);
         }
         return null;
