@@ -76,11 +76,14 @@ public class FishScraper {
 
     private String scrapeFishBaseFishLink(String fishName) throws IOException {
         Connection connection = Jsoup.connect(BaseUrls.FISH + "CommonNameSearchList.php")
-                .data("CommonName", fishName).timeout(TIMEOUT_SEC * 1000);
+                .data("CommonName", fishName).timeout(TIMEOUT_SEC * 1000).followRedirects(true);
         Document doc = connection.post();
         Element content = doc.body();
         Elements links = content.getElementsByTag("a");
         List<Element> fishLinks = links.stream().filter(l -> l.attr("href").contains("SpeciesSummary.php")).collect(Collectors.toList());
+        if (fishLinks.isEmpty()) {
+            return null;
+        }
         return fishLinks.get(0).attr("href");
     }
 
