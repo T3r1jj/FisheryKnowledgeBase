@@ -49,7 +49,7 @@ public class Fish {
      * @param b for (cm, g)
      */
     public void setWeight(float a, float b) {
-        weight = (float) (a * Math.pow((length / 100f), b) / 1000f);
+        weight = (float) (a * Math.pow((length * 100f), b) / 1000f);
     }
 
     public String getDescription() {
