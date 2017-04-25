@@ -184,6 +184,9 @@ public class FishScraper {
 
     public List<FishImage> scrapeImages(String fishSciName) throws IOException {
         String[] genusSpecies = fishSciName.split(" ");
+        if (genusSpecies.length < 2) {
+            return new LinkedList<>();
+        }
         Connection connection = Jsoup.connect(BaseUrls.FISH_IMAGES + "?Genus=" + genusSpecies[0] + "&Species=" + genusSpecies[1]).timeout(TIMEOUT_SEC * 1000);
         List<FishImage> images = new LinkedList<>();
         Document doc = connection.get();

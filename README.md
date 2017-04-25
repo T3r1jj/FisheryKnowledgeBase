@@ -2,7 +2,7 @@
 KnowledgeBase is a RSI-Fishery project (3rd) module which scrapes information from the web about products/services offered by the project. The communication is possible through REST API documented with OpenAPI (Swagger2).
 
 The module is currently hosted on Heroku at: https://fishery-knowledge-base.herokuapp.com  
-Current API version 1.2.4 is supposed to be stable. Future versions should be backward compatible (with 1.0.0 version).
+Current API version 1.2.5 is supposed to be stable. Future versions should be backward compatible (with 1.0.0 version).
 
 **Check out wiki pages for more info.**
 ***

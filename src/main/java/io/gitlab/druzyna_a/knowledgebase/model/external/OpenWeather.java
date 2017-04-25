@@ -125,14 +125,6 @@ public class OpenWeather extends Weather {
                         jsonObject.get("description").getAsString())
                 );
             }
-            if (jsonRoot.has("rain")) {
-                JsonObject rain = jsonRoot.get("rain").getAsJsonObject();
-                openWeather.setRainPast3h(rain.get("3h").getAsString());
-            }
-            if (jsonRoot.has("snow")) {
-                JsonObject snow = jsonRoot.get("snow").getAsJsonObject();
-                openWeather.setSnowPast3h(snow.get("3h").getAsString());
-            }
             JsonObject clouds = jsonRoot.get("clouds").getAsJsonObject();
             openWeather.setCloudiness(clouds.get("all").getAsDouble() / 100d);
             JsonObject sys = jsonRoot.get("sys").getAsJsonObject();

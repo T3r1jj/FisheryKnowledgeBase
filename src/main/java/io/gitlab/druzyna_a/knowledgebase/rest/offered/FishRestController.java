@@ -60,10 +60,14 @@ public class FishRestController implements FishApi {
     }
 
     @Override
-    public ResponseEntity<List<FishImage>> fetchFishImages(@ApiParam(value = "Name of the fish", required = true)
+    public ResponseEntity<List<FishImage>> fetchFishImages(@ApiParam(value = "Scientific name of the fish", required = true)
             @RequestParam String name) {
         try {
-            return ResponseEntity.ok(fishScraper.scrapeImages(name));
+            List<FishImage> images = fishScraper.scrapeImages(name);
+            if (images.isEmpty()) {
+                return ResponseEntity.status(404).build();
+            }
+            return ResponseEntity.ok(images);
         } catch (IOException ex) {
             Logger.getLogger(FishRestController.class.getName()).log(Level.SEVERE, null, ex);
             return ResponseEntity.status(502).build();
