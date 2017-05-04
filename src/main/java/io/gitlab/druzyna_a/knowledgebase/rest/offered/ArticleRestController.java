@@ -20,6 +20,10 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import io.gitlab.druzyna_a.knowledgebase.db.ArticlesRepository;
+import java.time.Instant;
+import java.util.ArrayList;
+import static io.gitlab.druzyna_a.knowledgebase.db.ArticlesRepository.EPOCH_SEC_QUICK_SEARCH;
+import static io.gitlab.druzyna_a.knowledgebase.db.ArticlesRepository.EPOCH_SEC_LONG_SEARCH;
 
 /**
  *
@@ -57,7 +61,6 @@ public class ArticleRestController implements ArticleApi {
             ArticlesRequest articlesRequest = possibleRequest.get();
             if (articlesRequest.isScraped()) {
                 List<Article> articles = articlesRequest.getArticles();
-                articlesRepository.delete(articlesRequest);
                 return ResponseEntity.ok(articles);
             } else {
                 return ResponseEntity.status(202).build();
@@ -65,6 +68,16 @@ public class ArticleRestController implements ArticleApi {
         } else {
             return ResponseEntity.status(404).build();
         }
+    }
+
+    @Override
+    public ResponseEntity<List<ArticlesRequest>> fetchArticlesRequests(@ApiParam(value = "API token", required = true) @RequestParam int token) {
+        if (!isTokenValid(token)) {
+            return ResponseEntity.status(403).build();
+        }
+        List<ArticlesRequest> articlesRequests = articlesRepository.findAll();
+        articlesRequests.stream().forEach(ar -> ar.setArticles(new ArrayList<>()));
+        return ResponseEntity.ok(articlesRequests);
     }
 
     @Override
@@ -81,6 +94,10 @@ public class ArticleRestController implements ArticleApi {
         }
         ArticlesRequest articleRequest = new ArticlesRequest(tags, Math.min(tags.size(), Math.max(requiredTagsCount, 1)));
         articleRequest.setQuick(quick);
+        articleRequest.setScraped(false);
+        long estimatedSec = EPOCH_SEC_QUICK_SEARCH * articlesRepository.countByScrapedAndQuick(false, true) + EPOCH_SEC_LONG_SEARCH * articlesRepository.countByScrapedAndQuick(false, false)
+                + (quick ? EPOCH_SEC_QUICK_SEARCH : EPOCH_SEC_LONG_SEARCH);
+        articleRequest.setEstimatedTime(Instant.now().getEpochSecond() + estimatedSec);
         String id = articlesRepository.save(articleRequest).getId();
         crawlerController.run();
         return ResponseEntity.ok(id);

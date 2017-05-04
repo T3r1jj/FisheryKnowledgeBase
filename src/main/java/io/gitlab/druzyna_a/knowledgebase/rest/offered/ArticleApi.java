@@ -1,5 +1,6 @@
 package io.gitlab.druzyna_a.knowledgebase.rest.offered;
 
+import io.gitlab.druzyna_a.knowledgebase.model.offered.ArticlesRequest;
 import io.gitlab.druzyna_a.knowledgebase.model.offered.ArticlesRequest.Article;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,15 +24,22 @@ public interface ArticleApi {
 
     static final int UNSCRAPED_ARTICLES_QUEUE_LIMIT = 100;
 
-    @ApiOperation(httpMethod = "GET", value = "Fetch articles by assigned request id. Fetched articles will be no longer accessible after successful fetch request.")
+    @ApiOperation(httpMethod = "GET", value = "Fetch articles by assigned request id.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "List of found articles. After this response the data will be no longer accessible.", response = Article.class, responseContainer = "List")
+        @ApiResponse(code = 200, message = "List of found articles.", response = Article.class, responseContainer = "List")
         , @ApiResponse(code = 202, message = "Pending search...", response = Void.class)
         , @ApiResponse(code = 403, message = "Invalid token", response = Void.class)
         , @ApiResponse(code = 404, message = "Request not found", response = Void.class)})
-    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(path = "{id}", method = RequestMethod.GET, produces = "application/json")
     ResponseEntity<List<Article>> fetchArticles(@ApiParam(value = "Id of articles request", required = true) @RequestParam String id,
             @ApiParam(value = "API token", required = true) @RequestParam int token);
+
+    @ApiOperation(httpMethod = "GET", value = "Fetch articles requests with additional info.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "List of articles requests with additional info.", response = ArticlesRequest.class, responseContainer = "List")
+        , @ApiResponse(code = 403, message = "Invalid token", response = Void.class)})
+    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
+    ResponseEntity<List<ArticlesRequest>> fetchArticlesRequests(@ApiParam(value = "API token", required = true) @RequestParam int token);
 
     @ApiOperation(httpMethod = "POST", value = "Request articles scrap by tags. The request will queued and associated id will be returned. Refer to other resoruce for articles fetching.", consumes = "application/json")
     @ApiResponses(value = {
