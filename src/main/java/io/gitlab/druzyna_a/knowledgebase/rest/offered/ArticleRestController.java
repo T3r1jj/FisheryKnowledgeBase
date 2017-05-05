@@ -51,7 +51,7 @@ public class ArticleRestController implements ArticleApi {
     private String totpHmacAlgorithm;
 
     @Override
-    public ResponseEntity<List<Article>> fetchArticles(@ApiParam(value = "Id of articles request", required = true) @RequestParam String id,
+    public ResponseEntity<List<Article>> fetchArticles(@ApiParam(value = "Id of articles request", required = true) @PathVariable String id,
             @ApiParam(value = "API token", required = true) @RequestParam int token) {
         if (!isTokenValid(token)) {
             return ResponseEntity.status(403).build();

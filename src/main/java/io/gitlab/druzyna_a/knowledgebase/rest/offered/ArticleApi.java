@@ -31,7 +31,7 @@ public interface ArticleApi {
         , @ApiResponse(code = 403, message = "Invalid token", response = Void.class)
         , @ApiResponse(code = 404, message = "Request not found", response = Void.class)})
     @RequestMapping(path = "{id}", method = RequestMethod.GET, produces = "application/json")
-    ResponseEntity<List<Article>> fetchArticles(@ApiParam(value = "Id of articles request", required = true) @RequestParam String id,
+    ResponseEntity<List<Article>> fetchArticles(@ApiParam(value = "Id of articles request", required = true) @PathVariable String id,
             @ApiParam(value = "API token", required = true) @RequestParam int token);
 
     @ApiOperation(httpMethod = "GET", value = "Fetch articles requests with additional info.")
