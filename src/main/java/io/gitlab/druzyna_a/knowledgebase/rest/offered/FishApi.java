@@ -34,7 +34,7 @@ public interface FishApi {
 
     @ApiOperation(httpMethod = "GET", value = "Fetch all fish names")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Fish names", response = String.class, responseContainer = "List")
+        @ApiResponse(code = 200, message = "Fish names", response = FishName.class, responseContainer = "List")
         , @ApiResponse(code = 404, message = "Wrong country code", response = Void.class)
         , @ApiResponse(code = 502, message = "Error while connecting to upstream server, try again later", response = Void.class)
     })
