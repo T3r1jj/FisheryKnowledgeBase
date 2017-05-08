@@ -23,6 +23,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import io.gitlab.druzyna_a.knowledgebase.db.ArticlesRepository;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 
 /**
  *
@@ -31,6 +33,16 @@ import io.gitlab.druzyna_a.knowledgebase.db.ArticlesRepository;
 @Component
 @Scope("singleton")
 public class CrawlerController {
+
+    private static final Whitelist WHITELIST;
+
+    static {
+        WHITELIST = Whitelist.relaxed();
+        WHITELIST.addAttributes(":all", "style");
+        WHITELIST.addAttributes("a", "href");
+        WHITELIST.addAttributes("img", "src");
+        WHITELIST.addAttributes("iframe", "src");
+    }
 
     @Autowired
     private ArticlesRepository articlesRepository;
@@ -125,7 +137,10 @@ public class CrawlerController {
 
     private String scrapeDescription(Element div) {
         div.getElementsByTag("a").stream().filter(a -> a.attr("href").contains("edit")).forEach(a -> a.remove());
-        return div.toString();
+        div.select("a[href]").stream().forEach(url -> url.attr("href", url.absUrl("href")));
+        div.select("img").stream().forEach(img -> img.attr("src", img.absUrl("src")));
+        div.select("iframe").stream().forEach(img -> img.attr("src", img.absUrl("src")));
+        return Jsoup.clean(div.toString(), WHITELIST);
     }
 
     private String scrapeImage(Document document) {
