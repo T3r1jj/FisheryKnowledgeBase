@@ -65,7 +65,7 @@ public class FishScraper {
         return Optional.of(fishNames);
     }
 
-    public Optional<Fish> scrapeFish(String fishName) throws IOException {
+    public Optional<Fish> scrapeCommonFish(String fishName) throws IOException {
         String url = scrapeFishBaseFishLink(fishName);
         if (url == null) {
             return Optional.empty();
@@ -89,8 +89,13 @@ public class FishScraper {
 
     private Fish scrapeFishBaseFish(String url, String fishName) throws IOException {
         Connection connection = Jsoup.connect(BaseUrls.FISH + url).timeout(TIMEOUT_SEC * 1000);
+        return scrapeFishBaseFishContent(connection, fishName);
+    }
+
+    private Fish scrapeFishBaseFishContent(Connection connection, String fishName) throws IOException {
         Document doc = connection.get();
-        Fish fish = new Fish(fishName);
+        Element commonName = doc.getElementById("ss-sciname").getElementsByClass("sheader2").get(0);
+        Fish fish = new Fish(getDivSpanContent(commonName));
         Element sciName = doc.getElementById("ss-sciname").getElementsByClass("sciname").get(0);
         fish.setSciName(getDivSpanContent(sciName));
         Element main = doc.getElementById("ss-main");
@@ -207,8 +212,19 @@ public class FishScraper {
         return URLDecoder.decode(src, "utf8").replace("workimagethumb.php?s=", "").replace("&w=300", "");
     }
 
+    public Optional<Fish> scrapeScientificFish(String name) throws IOException {
+        try {
+            String[] genusSpecies = name.split(" ");
+            Connection connection = Jsoup.connect(BaseUrls.FISH_SCI + genusSpecies[0] + "-" + genusSpecies[1] + ".html").timeout(TIMEOUT_SEC * 1000);
+            return Optional.of(scrapeFishBaseFishContent(connection, name));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
     private enum BaseUrls {
-        FISH_NAMES("http://www.fishbase.org/Country/"), FISH("http://www.fishbase.org/ComNames/"),
+        FISH_NAMES("http://www.fishbase.org/Country/"), FISH("http://www.fishbase.org/ComNames/"), FISH_SCI("http://www.fishbase.org/summary/"),
         FISH_PROTECTION("http://www.iucnredlist.org"), FISH_OCCURENCE("http://gbif.org/occurrence/search"),
         FISH_IMAGES("http://www.fishbase.org/photos/thumbnailssummary.php");
 

@@ -30,7 +30,7 @@ public interface FishApi {
         , @ApiResponse(code = 404, message = "No information about fish with such name", response = Void.class)
         , @ApiResponse(code = 502, message = "Error while connecting to upstream server, try again later", response = Void.class)})
     @RequestMapping(path = "/{name}", method = RequestMethod.GET, produces = "application/json")
-    ResponseEntity<Fish> fetchFish(@ApiParam(value = "Name of the fish", required = true) @PathVariable("name") String name);
+    ResponseEntity<Fish> fetchFish(@ApiParam(value = "Name of the fish", required = true) @PathVariable("name") String name, @ApiParam(value = "Force search by common name") @RequestParam(name = "common", required = false, defaultValue = "false") boolean common);
 
     @ApiOperation(httpMethod = "GET", value = "Fetch all fish names")
     @ApiResponses(value = {

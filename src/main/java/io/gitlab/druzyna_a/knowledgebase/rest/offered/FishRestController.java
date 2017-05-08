@@ -29,9 +29,15 @@ public class FishRestController implements FishApi {
     private FishScraper fishScraper;
 
     @Override
-    public ResponseEntity<Fish> fetchFish(@ApiParam(value = "Name of the fish", required = true) @PathVariable("name") String name) {
+    public ResponseEntity<Fish> fetchFish(@ApiParam(value = "Name of the fish", required = true) @PathVariable("name") String name,
+            @ApiParam(value = "Force search by common name") @RequestParam(name = "common", required = false, defaultValue = "false") boolean common) {
         try {
-            Optional<Fish> fish = fishScraper.scrapeFish(name);
+            Optional<Fish> fish;
+            if (common || name.split(" ").length != 2) {
+                fish = fishScraper.scrapeCommonFish(name);
+            } else {
+                fish = fishScraper.scrapeScientificFish(name);
+            }
             if (fish.isPresent()) {
                 return ResponseEntity.ok(fish.get());
             } else {
