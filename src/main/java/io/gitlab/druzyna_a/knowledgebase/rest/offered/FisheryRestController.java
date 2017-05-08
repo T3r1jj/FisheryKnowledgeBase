@@ -17,9 +17,11 @@ import java.io.StringWriter;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,6 +50,11 @@ public class FisheryRestController implements FisheryApi {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(OverpassApi.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(new OkHttpClient.Builder()
+                        .connectTimeout(5, TimeUnit.SECONDS)
+                        .writeTimeout(10, TimeUnit.SECONDS)
+                        .readTimeout(45, TimeUnit.SECONDS)
+                        .build())
                 .build();
         OverpassApi api = retrofit.create(OverpassApi.class);
         Call<OverpassFisheryData> overpassCall = api.getLocations(query);

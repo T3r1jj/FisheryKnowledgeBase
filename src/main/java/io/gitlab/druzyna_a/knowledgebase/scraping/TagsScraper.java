@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Scope("singleton")
 public class TagsScraper {
     
-    private static final int TIMEOUT_SEC = 15;
+    private static final int TIMEOUT_SEC = 20;
     
     private static final String[] BASE_URLS = new String[]{
         "http://www.tackledirect.com/",

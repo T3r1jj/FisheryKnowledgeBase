@@ -34,34 +34,29 @@ import org.springframework.stereotype.Component;
 @Scope("singleton")
 public class FishScraper {
 
-    private static final int TIMEOUT_SEC = 10;
+    private static final int TIMEOUT_SEC = 20;
 
     public Optional<List<FishName>> scrapeFishNames(String countryCode) throws IOException {
         if (!IsoUtil.isValidCountry(countryCode)) {
             return Optional.empty();
         }
         int numericCountryCode = IsoUtil.getCountryCode(countryCode);
-        int pageIndex = 1;
         List<FishName> fishNames = new LinkedList<>();
-        Document doc;
-        do {
-            String url = BaseUrls.FISH_NAMES + "CountryChecklist.php?c_code=" + numericCountryCode + "&vhabitat=all2&csub_code=&cpresence=present&resultPage=" + pageIndex;
-            Connection connection = Jsoup.connect(url).timeout(TIMEOUT_SEC * 1000);
-            doc = connection.get();
-            Element content = doc.body();
-            Element table = doc.select("table[class=commonTable]").first();
-            Iterator<Element> it = table.select("td").iterator();
-            while (it.hasNext()) {
-                it.next();
-                it.next();
-                String species = it.next().text().replace("\u00a0", "");
-                it.next();
-                String name = it.next().text().replace("\u00a0", "");
-                String localName = it.next().text().replace("\u00a0", "");
-                fishNames.add(new FishName(name, species, localName));
-            }
-            pageIndex++;
-        } while (doc.getElementsByTag("a").text().contains("Next"));
+        String url = BaseUrls.FISH_NAMES + "CountryChecklist.php?c_code=" + numericCountryCode + "&vhabitat=all2&csub_code=&cpresence=present&showAll=yes";
+        Connection connection = Jsoup.connect(url).timeout(TIMEOUT_SEC * 1000);
+        Document doc = connection.get();
+        Element content = doc.body();
+        Element table = doc.select("table[class=commonTable]").first();
+        Iterator<Element> it = table.select("td").iterator();
+        while (it.hasNext()) {
+            it.next();
+            it.next();
+            String species = it.next().text().replace("\u00a0", "");
+            it.next();
+            String name = it.next().text().replace("\u00a0", "");
+            String localName = it.next().text().replace("\u00a0", "");
+            fishNames.add(new FishName(name, species, localName));
+        }
         return Optional.of(fishNames);
     }
 
@@ -76,7 +71,7 @@ public class FishScraper {
 
     private String scrapeFishBaseFishLink(String fishName) throws IOException {
         Connection connection = Jsoup.connect(BaseUrls.FISH + "CommonNameSearchList.php")
-                .data("CommonName", fishName).timeout(TIMEOUT_SEC * 1000).followRedirects(true);
+                .data("CommonName", fishName).timeout(TIMEOUT_SEC * 500).followRedirects(true);
         Document doc = connection.post();
         Element content = doc.body();
         Elements links = content.getElementsByTag("a");
@@ -88,7 +83,7 @@ public class FishScraper {
     }
 
     private Fish scrapeFishBaseFish(String url, String fishName) throws IOException {
-        Connection connection = Jsoup.connect(BaseUrls.FISH + url).timeout(TIMEOUT_SEC * 1000);
+        Connection connection = Jsoup.connect(BaseUrls.FISH + url).timeout(TIMEOUT_SEC * 500);
         return scrapeFishBaseFishContent(connection, fishName);
     }
 
@@ -140,7 +135,7 @@ public class FishScraper {
     public Optional<FishProtection> scrapeFishProtection(String fishSciName) throws IOException {
         String protectionUrl = getProtectionUrl(fishSciName);
         if (protectionUrl != null) {
-            Connection connection = Jsoup.connect(BaseUrls.FISH_PROTECTION + protectionUrl).timeout(TIMEOUT_SEC * 1000);
+            Connection connection = Jsoup.connect(BaseUrls.FISH_PROTECTION + protectionUrl).timeout(TIMEOUT_SEC * 500);
             Document doc = connection.get();
             FishProtection protection = new FishProtection();
             Element status = doc.getElementsByClass("label").stream().filter(l -> l.text().contains("Red List Category & Criteria")).findFirst().get().parent().child(1);
@@ -158,7 +153,7 @@ public class FishScraper {
     }
 
     private String getProtectionUrl(String fishSciName) throws IOException {
-        Connection connection = Jsoup.connect(BaseUrls.FISH_PROTECTION + "/search/external").timeout(TIMEOUT_SEC * 1000).data("text", fishSciName);
+        Connection connection = Jsoup.connect(BaseUrls.FISH_PROTECTION + "/search/external").timeout(TIMEOUT_SEC * 500).data("text", fishSciName);
         Document doc = connection.post();
         Element results = doc.getElementById("results");
         if (results.childNodeSize() > 0) {
@@ -218,7 +213,6 @@ public class FishScraper {
             Connection connection = Jsoup.connect(BaseUrls.FISH_SCI + genusSpecies[0] + "-" + genusSpecies[1] + ".html").timeout(TIMEOUT_SEC * 1000);
             return Optional.of(scrapeFishBaseFishContent(connection, name));
         } catch (IOException ex) {
-            ex.printStackTrace();
             return Optional.empty();
         }
     }
