@@ -52,7 +52,7 @@ public interface FishApi {
 
     @ApiOperation(httpMethod = "GET", value = "Fetch additional images of fish by name")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Images of fish", response = String.class, responseContainer = "List")
+        @ApiResponse(code = 200, message = "Images of fish", response = FishImage.class, responseContainer = "List")
         , @ApiResponse(code = 404, message = "No images about fish with such name", response = Void.class)
         , @ApiResponse(code = 502, message = "Error while connecting to upstream server, try again later", response = Void.class)
     })
