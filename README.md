@@ -1,4 +1,7 @@
 # KnowledgeBase
+
+[![v1.4.0 build status](https://gitlab.com/Druzyna-A/KnowledgeBase/badges/v1.4.0/build.svg)](https://gitlab.com/Druzyna-A/KnowledgeBase/commits/v1.4.0) - v1.4.0
+
 KnowledgeBase is a RSI-Fishery project (3rd) module which scrapes information from the web about products/services offered by the project. The communication is possible through REST API documented with OpenAPI (Swagger2).
 
 The module is currently hosted on Heroku at: https://fishery-knowledge-base.herokuapp.com  
