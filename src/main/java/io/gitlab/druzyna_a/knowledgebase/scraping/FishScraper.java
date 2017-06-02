@@ -211,14 +211,19 @@ public class FishScraper {
         try {
             String[] genusSpecies = name.split(" ");
             Connection connection = Jsoup.connect(BaseUrls.FISH_SCI + genusSpecies[0] + "-" + genusSpecies[1] + ".html").timeout(TIMEOUT_SEC * 1000);
-            return Optional.of(scrapeFishBaseFishContent(connection, name));
+            try {
+                return Optional.of(scrapeFishBaseFishContent(connection, name));
+            } catch (NullPointerException nullPointerException) {
+                connection = Jsoup.connect(BaseUrls.FISH_SCI_BACKUP + genusSpecies[0] + "-" + genusSpecies[1] + ".html").timeout(TIMEOUT_SEC * 1000);
+                return Optional.of(scrapeFishBaseFishContent(connection, name));
+            }
         } catch (IOException ex) {
             return Optional.empty();
         }
     }
 
     private enum BaseUrls {
-        FISH_NAMES("http://www.fishbase.org/Country/"), FISH("http://www.fishbase.org/ComNames/"), FISH_SCI("http://www.fishbase.org/summary/"),
+        FISH_NAMES("http://www.fishbase.org/Country/"), FISH("http://www.fishbase.org/ComNames/"), FISH_SCI("http://www.fishbase.org/summary/"), FISH_SCI_BACKUP("http://www.fishbase.de/summary/"),
         FISH_PROTECTION("http://www.iucnredlist.org"), FISH_OCCURENCE("http://gbif.org/occurrence/search"),
         FISH_IMAGES("http://www.fishbase.org/photos/thumbnailssummary.php");
 

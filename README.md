@@ -1,6 +1,6 @@
 # KnowledgeBase
 
-[![v1.4.0 build status](https://gitlab.com/Druzyna-A/KnowledgeBase/badges/v1.4.0/build.svg)](https://gitlab.com/Druzyna-A/KnowledgeBase/commits/v1.4.0) - v1.4.0
+[![v1.4.1 build status](https://gitlab.com/Druzyna-A/KnowledgeBase/badges/v1.4.1/build.svg)](https://gitlab.com/Druzyna-A/KnowledgeBase/commits/v1.4.1) - v1.4.1
 
 KnowledgeBase is a RSI-Fishery project (3rd) module which scrapes information from the web about products/services offered by the project. The communication is possible through REST API documented with OpenAPI (Swagger2).
 

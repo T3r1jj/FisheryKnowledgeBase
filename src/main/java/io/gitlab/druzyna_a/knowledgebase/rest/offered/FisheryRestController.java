@@ -62,7 +62,7 @@ public class FisheryRestController implements FisheryApi {
             Response<OverpassFisheryData> response = overpassCall.execute();
             List<Fishery> fisheries = response.body().toFisheries();
             return ResponseEntity.ok().body(fisheries);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(FisheryRestController.class.getName()).log(Level.SEVERE, null, ex);
             return generateUnexpectedResponse(ex);
         }
@@ -90,7 +90,7 @@ public class FisheryRestController implements FisheryApi {
             Response<OpenWeather> response = openWeatherCall.execute();
             OpenWeather weather = response.body();
             return ResponseEntity.ok().body(weather);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             return generateUnexpectedResponse(ex);
         }
     }
@@ -130,12 +130,12 @@ public class FisheryRestController implements FisheryApi {
             List<Weather> forecast = Arrays.asList(response.body().data);
             forecast = forecast.stream().filter(weather -> ((weather.time >= requestedTime) && (weather.time <= (requestedTime + range * 60 * 60)))).collect(Collectors.toList());
             return ResponseEntity.ok().body(forecast);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             return generateUnexpectedResponse(ex);
         }
     }
 
-    private ResponseEntity generateUnexpectedResponse(IOException ex) {
+    private ResponseEntity generateUnexpectedResponse(Exception ex) {
         Logger.getLogger(FisheryRestController.class.getName()).log(Level.SEVERE, null, ex);
         StringWriter sw = new StringWriter();
         ex.printStackTrace(new PrintWriter(sw));

@@ -43,7 +43,7 @@ public class FishRestController implements FishApi {
             } else {
                 return ResponseEntity.status(404).build();
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(FishRestController.class.getName()).log(Level.SEVERE, null, ex);
             return ResponseEntity.status(502).build();
         }
@@ -59,7 +59,7 @@ public class FishRestController implements FishApi {
             } else {
                 return ResponseEntity.status(404).build();
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(FishRestController.class.getName()).log(Level.SEVERE, null, ex);
             return ResponseEntity.status(502).build();
         }
@@ -74,7 +74,7 @@ public class FishRestController implements FishApi {
                 return ResponseEntity.status(404).build();
             }
             return ResponseEntity.ok(images);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(FishRestController.class.getName()).log(Level.SEVERE, null, ex);
             return ResponseEntity.status(502).build();
         }
@@ -87,7 +87,7 @@ public class FishRestController implements FishApi {
             @ApiParam(value = "Fishery radius in meters", required = true) @RequestParam int radius) {
         try {
             return ResponseEntity.ok().body(fishScraper.scrapeExists(BoundingBox.getBBoxCoordinates(lat, lng, radius), name));
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(FishRestController.class.getName()).log(Level.SEVERE, null, ex);
             return ResponseEntity.status(502).build();
         }
@@ -102,7 +102,7 @@ public class FishRestController implements FishApi {
             } else {
                 return ResponseEntity.status(404).build();
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(FishRestController.class.getName()).log(Level.SEVERE, null, ex);
             return ResponseEntity.status(502).build();
         }
