@@ -10,11 +10,12 @@
     </parent>
 
     <groupId>io.gitlab.druzyna_a</groupId>
-    <artifactId>KnowledgeBase</artifactId>
-    <version>1.4.1</version>
+    <artifactId>FisheryKnowledgeBase</artifactId>
+    <version>1.4.2-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>KnowledgeBase</name>
-    <description>Knowledge base module which integrates information about products/services offered by RSI fishery project</description>
+    <name>FisheryKnowledgeBase</name>
+    <description>Knowledge base module which fetches information about products/services offered by the Fishery project from external sources</description>
+    <url>https://github.com/T3r1jj/FisheryKnowledgeBase</url>
 
     <developers>
         <developer>
@@ -126,7 +127,7 @@
     </dependencies>
 
     <build>
-        <finalName>knowledgebase</finalName>
+        <finalName>fisheryknowledgebase</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

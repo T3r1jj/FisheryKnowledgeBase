@@ -1,4 +1,4 @@
-# KnowledgeBase
+# FisheryKnowledgeBase
 
 [![v1.4.1 build status](https://gitlab.com/Druzyna-A/KnowledgeBase/badges/v1.4.1/build.svg)](https://gitlab.com/Druzyna-A/KnowledgeBase/commits/v1.4.1) - v1.4.1
 
