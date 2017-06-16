@@ -14,7 +14,7 @@
     <version>1.4.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>FisheryKnowledgeBase</name>
-    <description>Knowledge base module which fetches information about products/services offered by the Fishery project from external sources</description>
+    <description>Knowledge base module fetches information about products/services offered by the Fishery project from external sources</description>
     <url>https://github.com/T3r1jj/FisheryKnowledgeBase</url>
 
     <developers>

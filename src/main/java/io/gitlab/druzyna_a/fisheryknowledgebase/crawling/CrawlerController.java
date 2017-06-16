@@ -35,6 +35,7 @@ import org.jsoup.safety.Whitelist;
 public class CrawlerController {
 
     private static final Whitelist WHITELIST;
+    private static final int ARTICLES_LIMIT = 20;
 
     static {
         WHITELIST = Whitelist.relaxed();
@@ -69,8 +70,19 @@ public class CrawlerController {
                 initCrawlers();
                 startCrawlers();
                 articlesRequest.setScraped(true);
-                articlesRepository.save(articlesRequest);
-                possibleRequest = articlesRepository.findFirstByScrapedOrderByTimeAsc(false);
+                int articlesCount = articlesRequest.getArticles().size();
+                if (articlesCount > ARTICLES_LIMIT) {
+                    articlesRequest.getArticles().subList(ARTICLES_LIMIT, articlesCount).clear();
+                }
+                try {
+                    articlesRepository.save(articlesRequest);
+                    possibleRequest = articlesRepository.findFirstByScrapedOrderByTimeAsc(false);
+                } catch (org.bson.BsonSerializationException bsonException) {
+                    Logger.getLogger(CrawlerController.class.getName()).log(Level.SEVERE, null, bsonException);
+                    articlesRequest.setArticles(Collections.EMPTY_LIST);
+                    articlesRepository.save(articlesRequest);
+                    possibleRequest = articlesRepository.findFirstByScrapedOrderByTimeAsc(false);
+                }
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(CrawlerController.class.getName()).log(Level.SEVERE, null, ex);
@@ -105,12 +117,13 @@ public class CrawlerController {
         ScrapeCommand scrapeCommand = new SmartScrapeCommand() {
             @Override
             public void scrape(Document document) {
-                Elements divs = document.select("div");
+                Elements divs = document.select("div, p");
                 Elements innerMostDivs = new Elements();
-                divs.stream().filter(div -> div.select(">div").isEmpty()).forEach(div -> innerMostDivs.add(div));
+                divs.stream().filter(div -> div.select(">div").isEmpty() && div.select(">p").isEmpty()).forEach(div -> innerMostDivs.add(div));
                 List<Element> resultDivs = innerMostDivs.stream().filter(div -> {
-                    return articlesRequest.getTags().stream().filter(tag -> div.text().toLowerCase().contains(tag.toLowerCase())).count() >= articlesRequest.getRequiredTagsCount()
-                            && isPotentiallyValuable(div);
+                    return !div.getElementsByTag("img").isEmpty() ||
+                            (articlesRequest.getTags().stream().filter(tag -> div.text().toLowerCase().contains(tag.toLowerCase())).count() >= articlesRequest.getRequiredTagsCount()
+                            && isPotentiallyValuable(div));
 
                 }).collect(Collectors.toList());
                 Article article = new Article();
@@ -136,7 +149,7 @@ public class CrawlerController {
     }
 
     private String scrapeDescription(Element div) {
-        div.getElementsByTag("a").stream().filter(a -> a.attr("href").contains("edit")).forEach(a -> a.remove());
+        div.getElementsByTag("a").stream().filter(a -> a.attr("href").contains("[edit]")).forEach(a -> a.remove());
         div.select("a[href]").stream().forEach(url -> url.attr("href", url.absUrl("href")));
         div.select("img").stream().forEach(img -> img.attr("src", img.absUrl("src")));
         div.select("iframe").stream().forEach(img -> img.attr("src", img.absUrl("src")));

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/article")
 public interface ArticleApi {
 
-    static final int UNSCRAPED_ARTICLES_QUEUE_LIMIT = 100;
+    int UNSCRAPED_ARTICLES_QUEUE_LIMIT = 100;
 
     @ApiOperation(httpMethod = "GET", value = "Fetch articles by assigned request id.")
     @ApiResponses(value = {
