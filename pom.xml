@@ -11,7 +11,7 @@
 
     <groupId>io.gitlab.druzyna_a</groupId>
     <artifactId>FisheryKnowledgeBase</artifactId>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.4.2</version>
     <packaging>jar</packaging>
     <name>FisheryKnowledgeBase</name>
     <description>Knowledge base module fetches information about products/services offered by the Fishery project from external sources</description>

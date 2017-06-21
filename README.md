@@ -1,18 +1,27 @@
 # FisheryKnowledgeBase
 
-[![v1.4.1 build status](https://gitlab.com/Druzyna-A/KnowledgeBase/badges/v1.4.1/build.svg)](https://gitlab.com/Druzyna-A/KnowledgeBase/commits/v1.4.1) - v1.4.1
+KnowledgeBase is the 3rd module, for distributed Fishery project, which scrapes information from the web about products/services offered by the project. The application was written in **Java**. The communication is possible through REST API, which is documented with **OpenAPI** (Swagger2).
 
-KnowledgeBase is a RSI-Fishery project (3rd) module which scrapes information from the web about products/services offered by the project. The communication is possible through REST API documented with OpenAPI (Swagger2).
+The module was hosted on **Heroku** and was build using **Spring Boot** with mLab **MongoDB** database. FisheryKnowledgeBase is based on **REST architectural style, NoSQL database, web crawling and scraping, concurrency**.
 
-The module is currently hosted on Heroku at: https://fishery-knowledge-base.herokuapp.com  
-Current API version 1.2.5 is supposed to be stable. Future versions should be backward compatible (with 1.0.0 version).
+### Gallery [[more]](https://t3r1jj.github.io/FisheryProject)
 
-**Check out wiki pages for more info.**
-***
-## Communication
-The majority of the API is open for use based on licenses provided in project license page (*/license.html*). To use articles API a so called TOTP token is needed. If you're using Java you can use [the totp4j module](https://gitlab.com/Druzyna-A/totp4j) for consistent and easy token generation.
+### API
+The API allows fetching information from external resources about:
+- articles
+- fishes
+- fisheries
+- weather
 
-Required private parameters to generate a token are as follows (**DO NOT PUBLISH**):
+Check out wiki for more information.
+
+### Configuration
+The configuration has been placed in application.properties file. It contains server properties (port, context, etc.), database connection settings and properties required for authorized communication. 
+
+### Communication
+The majority of the API is open for use based on licenses provided in project license page (*/license.html*). To use articles API a so called TOTP token is needed. [The totp4j lib](https://github.com/T3r1jj/totp4j) has been created for consistent and easy token generation in Java.
+
+Exemplary private parameters to generate a token are as follows:
 
 * **INTERVAL** = 30
 * **KEY** = "plotka"
